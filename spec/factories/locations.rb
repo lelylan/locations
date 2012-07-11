@@ -1,4 +1,5 @@
-# Read about factories at https://github.com/thoughtbot/factory_girl
+Settings.add_source!("#{Rails.root}/config/settings/test.yml")
+Settings.reload!
 
 FactoryGirl.define do
   factory :location, aliases: ['house', 'root'] do
@@ -45,8 +46,24 @@ FactoryGirl.define do
     after(:create) do |floor|
       room = FactoryGirl.create :room
       room.move_to_child_of floor
-      mini = FactoryGirl.create :room, name: "Bosone"
+      mini = FactoryGirl.create :room, name: "Bosone", devices: [ { uri: Settings.device.descendants.uri } ]
       mini.move_to_child_of room
+    end
+  end
+
+  trait :with_children_devices do
+    before(:create) do |location|
+      location.devices = [
+        { uri: Settings.device.uri },
+        { uri: Settings.device.another.uri }
+      ]
+    end
+  end
+
+  trait :with_devices do
+    after(:create) do |location|
+      location.devices = [ { uri: Settings.device.uri }, { uri: Settings.device.another.uri } ]
+      location.save
     end
   end
 end

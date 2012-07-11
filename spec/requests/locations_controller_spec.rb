@@ -4,154 +4,22 @@ feature "LocationsController" do
   before { Location.destroy_all }
   before { host! "http://" + host }
 
-  # -----------------
-  # GET /locations
-  # ----------------
+  ## -----------------
+  ## GET /locations
+  ## ----------------
 
-  context ".index" do
+  #context ".index" do
 
-    let(:uri) do
-      "/locations"
-    end
-
-    let!(:resource) do
-      FactoryGirl.create :root
-    end
-
-    let!(:resource_not_owned) do
-      FactoryGirl.create :location_not_owned
-    end
-
-    it_should_behave_like "not authorized resource", "visit(uri)"
-
-    context "when logged in" do
-
-      before do
-        basic_auth
-      end
-
-      it "shows all owned resources" do
-        visit uri
-        page.status_code.should == 200
-        should_have_owned_location resource
-      end
-
-
-      # ---------
-      # Search
-      # ---------
-      context "when searching" do
-
-        context "#name" do
-
-          let(:name) do
-            "My name is location"
-          end
-
-          let!(:result) do 
-            FactoryGirl.create(:location, name: name)
-          end
-
-          it "returns the searched location" do
-            visit "#{uri}?name=name+is"
-            should_contain_location result
-            page.should_not have_content resource.name
-          end
-        end
-      end
-
-
-      # ------------
-      # Pagination
-      # ------------
-      context "paginating location" do
-
-        let!(:resource) do
-          LocationDecorator.decorate(FactoryGirl.create(:location))
-        end
-
-        let!(:resources) do 
-          FactoryGirl.create_list(:location, Settings.pagination.per + 5, name: 'Extra location')
-        end
-
-        context "with :start" do
-
-          it "shows the next page" do
-            visit "#{uri}?start=#{resource.uri}"
-            page.status_code.should == 200
-            should_contain_location resources.first
-            page.should_not have_content resource.name
-          end
-        end
-
-        context "with :per" do
-
-          context "when not set" do
-
-            it "shows the default number of resources" do
-              visit uri
-              JSON.parse(page.source).should have(Settings.pagination.per).items
-            end
-          end
-
-          context "when set to 5" do
-
-            it "shows 5 resources" do
-              visit "#{uri}?per=5"
-              JSON.parse(page.source).should have(5).items
-            end
-          end
-
-          context "when set too high value" do
-
-            before { Settings.pagination.max_per = 30 }
-
-            it "shows the max number of allowed resources" do
-              visit "#{uri}?per=100000"
-              JSON.parse(page.source).should have(30).items
-            end
-          end
-
-          context "when set to a not valid value" do
-
-            it "shows the default number of resources" do
-              visit "#{uri}?per=not_valid"
-              JSON.parse(page.source).should have(Settings.pagination.per).items
-            end
-          end
-        end
-      end
-    end
-  end
-
-  # ---------------------
-  # GET /locations/:id
-  # ---------------------
-
-  #context ".show" do
-
-    #let!(:house) do
-      #LocationDecorator.decorate FactoryGirl.create(:root)
-    #end
-
-    #let!(:floor) do
-      #LocationDecorator.decorate FactoryGirl.create(:location, name: 'Floor')
-    #end
-
-    #let!(:room) do
-      #LocationDecorator.decorate FactoryGirl.create(:location, name: 'Room')
+    #let(:uri) do
+      #"/locations"
     #end
 
     #let!(:resource) do
-      #floor
+      #FactoryGirl.create :root
     #end
 
     #let!(:resource_not_owned) do
-      #FactoryGirl.create(:location_not_owned)
-    #end
-
-    #let(:uri) do
-      #"/locations/#{resource.id}"
+      #FactoryGirl.create :location_not_owned
     #end
 
     #it_should_behave_like "not authorized resource", "visit(uri)"
@@ -162,30 +30,197 @@ feature "LocationsController" do
         #basic_auth
       #end
 
+      #it "shows all owned resources" do
+        #visit uri
+        #page.status_code.should == 200
+        #should_have_owned_location resource
+      #end
+
+
+      ## ---------
+      ## Search
+      ## ---------
+      #context "when searching" do
+
+        #context "#name" do
+
+          #let(:name) do
+            #"My name is location"
+          #end
+
+          #let!(:result) do 
+            #FactoryGirl.create(:location, name: name)
+          #end
+
+          #it "returns the searched location" do
+            #visit "#{uri}?name=name+is"
+            #should_contain_location result
+            #page.should_not have_content resource.name
+          #end
+        #end
+      #end
+
+
+      ## ------------
+      ## Pagination
+      ## ------------
+      #context "paginating location" do
+
+        #let!(:resource) do
+          #LocationDecorator.decorate(FactoryGirl.create(:location))
+        #end
+
+        #let!(:resources) do 
+          #FactoryGirl.create_list(:location, Settings.pagination.per + 5, name: 'Extra location')
+        #end
+
+        #context "with :start" do
+
+          #it "shows the next page" do
+            #visit "#{uri}?start=#{resource.uri}"
+            #page.status_code.should == 200
+            #should_contain_location resources.first
+            #page.should_not have_content resource.name
+          #end
+        #end
+
+        #context "with :per" do
+
+          #context "when not set" do
+
+            #it "shows the default number of resources" do
+              #visit uri
+              #JSON.parse(page.source).should have(Settings.pagination.per).items
+            #end
+          #end
+
+          #context "when set to 5" do
+
+            #it "shows 5 resources" do
+              #visit "#{uri}?per=5"
+              #JSON.parse(page.source).should have(5).items
+            #end
+          #end
+
+          #context "when set too high value" do
+
+            #before { Settings.pagination.max_per = 30 }
+
+            #it "shows the max number of allowed resources" do
+              #visit "#{uri}?per=100000"
+              #JSON.parse(page.source).should have(30).items
+            #end
+          #end
+
+          #context "when set to a not valid value" do
+
+            #it "shows the default number of resources" do
+              #visit "#{uri}?per=not_valid"
+              #JSON.parse(page.source).should have(Settings.pagination.per).items
+            #end
+          #end
+        #end
+      #end
+    #end
+  #end
+
+  # ---------------------
+  # GET /locations/:id
+  # ---------------------
+
+  context ".show" do
+
+    let!(:resource) do
+      LocationDecorator.decorate FactoryGirl.create(:floor, :with_ancestors, :with_descendants, :with_devices)
+    end
+
+    let!(:resource_not_owned) do
+      FactoryGirl.create(:location_not_owned)
+    end
+
+    let(:uri) do
+      "/locations/#{resource.id}"
+    end
+
+    #it_should_behave_like "not authorized resource", "visit(uri)"
+
+    context "when logged in" do
+
+      before do
+        basic_auth
+      end
+
       #it "view the owned resource" do
         #visit uri
+        #save_and_open_page
         #page.status_code.should == 200
         #should_have_location resource
       #end
 
-      #context "when checking connections" do
+      context "when checking connections" do
 
-        #before do
-          #visit uri
+        before do
+          visit uri
+        end
+
+        #context "when checking parent" do
+
+          #let(:parent) do
+            #LocationDecorator.decorate resource.parent
+          #end
+
+          #it "has parent" do
+            #page.should have_content(parent.uri)
+          #end
         #end
 
-        ##it "has contained_in location" do
-          ##page.should have_content(root.uri)
-        ##end
+        #context "when checking ancestors" do
 
-        ##it "has contains_locations" do
-          ##page.should have_content(room.uri)
-        ##end
+          #let(:ancestor) do
+            #LocationDecorator.decorate resource.parent.parent
+          #end
 
-        ##it "has contiains_devices" do
-          ##page.should have_content('"name":"Setting intensity"')
-        ##end
-      #end
+          #it "has ancestors" do
+            #page.should have_content(ancestor.uri)
+          #end
+        #end
+
+        #context "when checking children" do
+
+          #let(:children) do
+            #LocationDecorator.decorate resource.children.first
+          #end
+
+          #it "has child" do
+            #page.should have_content(children.uri)
+          #end
+        #end
+
+        #context "when checking descendants" do
+
+          #let(:descendants) do
+            #LocationDecorator.decorate resource.descendants.last
+          #end
+
+          #it "has descendants" do
+            #page.should have_content(descendants.uri)
+          #end
+        #end
+
+        #context "when checking children devices" do
+
+          #it "has children devices" do
+            #page.should have_content(resource.devices[0][:uri])
+          #end
+        #end
+
+        context "when checking descendants devices" do
+
+          it "has descendants devices" do
+            page.should have_content(resource.descendants.last.devices[0][:uri])
+          end
+        end
+      end
 
       #it "exposes the location URI" do
         #visit uri
@@ -200,8 +235,8 @@ feature "LocationsController" do
           #resource.uri.should match("http://www.lelylan.com/")
         #end
       #end
-    #end
-  #end
+    end
+  end
 
 
 

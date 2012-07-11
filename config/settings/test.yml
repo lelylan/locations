@@ -3,6 +3,8 @@ device:
   uri: <%= "#{device_host}/devices/closet-dimmer" %>
   another:
     uri: <%= "#{device_host}/devices/another-closet-dimmer" %>
+  descendants:
+    uri: <%= "#{device_host}/devices/descendant-closet-dimmer" %>
 
 type:
   host: <%= type_host = "https://type.lelylan.com" %>

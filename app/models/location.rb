@@ -1,7 +1,9 @@
 require 'addressable/uri'
 
 class Location < ActiveRecord::Base
-  acts_as_nested_set, dependent: :leave_children
+  acts_as_nested_set
+
+  serialize :devices, Array
 
   attr_accessor :parent_uri
   attr_accessible :name, :parent_uri
