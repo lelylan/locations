@@ -20,7 +20,7 @@ describe Location do
         "http://location.lelylan.com/locations/#{root.id}"
       end
 
-      context "when add a child" do
+      context "when adds a child" do
 
         let!(:children) do
           root.children.create(name: 'Child', parent_uri: root_uri)
@@ -32,6 +32,25 @@ describe Location do
 
         it "creates a child" do
           children.parent_id.should == root.id
+        end
+
+        context "when moves the child to a new parent" do
+
+          let(:parent) do
+            FactoryGirl.create :location, name: 'New parent'
+          end
+
+          before do
+            children.move_to_child_of(parent)
+          end
+
+          it "has the new parent" do
+            parent.children.should have(1).item
+          end
+
+          it "loses the old parent" do
+            root.reload.children.should have(0).items
+          end
         end
       end
     end
