@@ -239,41 +239,65 @@ feature "LocationsController" do
 
 
 
-  ## ---------------
-  ## POST /locations
-  ## ---------------
-  #context ".create" do
-    #before { @uri =  "/locations" }
+  # ---------------
+  # POST /locations
+  # ---------------
+  context ".create" do
 
-    #it_should_behave_like "not authorized resource", "page.driver.post(@uri)"
+    let(:uri) do
+      uri = "/locations"
+    end
 
-    #context "when logged in" do
-      #before { basic_auth }
-      #before { @params = { name: 'Location created', properties: @properties, functions: @functions, statuses: @statuses } }
+    it_should_behave_like "not authorized resource", "page.driver.post(uri)"
 
-      #it "creates the resource" do
-        #page.driver.post @uri, @params.to_json
-        #@resource = Location.last
-        #page.status_code.should == 201
-        #should_have_location @resource
-      #end
+    context "when logged in" do
 
-      #it "creates the resource connections" do
-        #page.driver.post @uri, @params.to_json
-        #@resource = Location.last
-        #@resource.property_ids.should have(2).items
-        #@resource.function_ids.should have(3).items
-        #@resource.status_ids.should have(1).items
-      #end
+      before do
+        basic_auth
+      end
 
-      #it "stores the resource" do
-        #expect{ page.driver.post(@uri, @params.to_json) }.to change{ Location.count }.by(1)
-      #end
+      let(:floor) do
+        LocationDecorator.decorate FactoryGirl.create(:floor, :with_ancestors, :with_descendants)
+      end
 
-      #it_validates "not valid params", "page.driver.post(@uri, @params.to_json)", { method: "POST", error: "Name can't be blank" }
-      #it_validates "not valid JSON", "page.driver.post(@uri, @params.to_json)", { method: "POST" }
-    #end
-  #end
+      let(:params) do
+        { 
+          name: 'Magic floor', 
+          parent: LocationDecorator.decorate(floor.parent).uri, 
+          locations: [
+            LocationDecorator.decorate(floor.children.first).uri,
+            LocationDecorator.decorate(floor.descendants.last).uri
+          ],
+          devices: [
+            Settings.device.uri,
+            Settings.device.another.uri
+          ]
+        }
+      end
+
+      it "creates the resource" do
+        page.driver.post uri, params.to_json
+        resource = Location.last
+        page.status_code.should == 201
+        should_have_location resource
+      end
+
+      it "creates the resource connections" do
+        page.driver.post @uri, @params.to_json
+        @resource = Location.last
+        @resource.property_ids.should have(2).items
+        @resource.function_ids.should have(3).items
+        @resource.status_ids.should have(1).items
+      end
+
+      it "stores the resource" do
+        expect{ page.driver.post(@uri, @params.to_json) }.to change{ Location.count }.by(1)
+      end
+
+      it_validates "not valid params", "page.driver.post(@uri, @params.to_json)", { method: "POST", error: "Name can't be blank" }
+      it_validates "not valid JSON", "page.driver.post(@uri, @params.to_json)", { method: "POST" }
+    end
+  end
 
 
 
