@@ -4,10 +4,10 @@ feature "LocationsController" do
   before { Location.destroy_all }
   before { host! "http://" + host }
 
-
   # -----------------
   # GET /locations
-  # -----------------
+  # ----------------
+
   context ".index" do
 
     let(:uri) do
@@ -124,105 +124,80 @@ feature "LocationsController" do
     end
   end
 
+  # ---------------------
+  # GET /locations/:id
+  # ---------------------
 
-
-  ## -----------------------
-  ## GET /locations/public
-  ## -----------------------
-  #context ".index" do
-    #before { @uri = "/locations/public" }
-    #before { @resource = FactoryGirl.create(:location) }
-    #before { @resource_not_owned = FactoryGirl.create(:location_not_owned) }
-
-    #context "when not logged in" do
-      #it "shows all owned and not owned resources" do
-        #visit @uri
-        #page.status_code.should == 200
-        #JSON.parse(page.source).should have(2).items
-      #end
-    #end
-
-    #context "when logged in" do
-      #before { basic_auth }
-
-      #it "shows all owned and not owned resources" do
-        #visit @uri
-        #page.status_code.should == 200
-        #JSON.parse(page.source).should have(2).items
-      #end
-
-      #it_should_behave_like "searching location"
-      #it_should_behave_like "paginating location"
-    #end
-  #end
-
-
-
-  ## ---------------------
-  ## GET /locations/:id
-  ## ---------------------
   #context ".show" do
-    #before { @resource = LocationDecorator.decorate(FactoryGirl.create(:location, properties: @properties, functions: @functions, statuses: @statuses, categories: @categories)) }
-    #before { @uri = "/locations/#{@resource.id.as_json}" }
-    #before { @resource_not_owned = FactoryGirl.create(:location_not_owned) }
 
-    #context "when not logged in" do
-      #it "view the owned resource" do
-        #visit @uri
-        #page.status_code.should == 200
-        #should_have_location @resource
-      #end
+    #let!(:house) do
+      #LocationDecorator.decorate FactoryGirl.create(:root)
     #end
 
+    #let!(:floor) do
+      #LocationDecorator.decorate FactoryGirl.create(:location, name: 'Floor')
+    #end
+
+    #let!(:room) do
+      #LocationDecorator.decorate FactoryGirl.create(:location, name: 'Room')
+    #end
+
+    #let!(:resource) do
+      #floor
+    #end
+
+    #let!(:resource_not_owned) do
+      #FactoryGirl.create(:location_not_owned)
+    #end
+
+    #let(:uri) do
+      #"/locations/#{resource.id}"
+    #end
+
+    #it_should_behave_like "not authorized resource", "visit(uri)"
+
     #context "when logged in" do
-      #before { basic_auth }
+
+      #before do
+        #basic_auth
+      #end
 
       #it "view the owned resource" do
-        #visit @uri
+        #visit uri
         #page.status_code.should == 200
-        #should_have_location @resource
+        #should_have_location resource
       #end
 
       #context "when checking connections" do
-        #before { visit @uri }
 
-        #it "has properties" do
-          #page.should have_content('"name":"Status"')
+        #before do
+          #visit uri
         #end
 
-        #it "has functions" do
-          #page.should have_content('"name":"Set intensity"')
-        #end
+        ##it "has contained_in location" do
+          ##page.should have_content(root.uri)
+        ##end
 
-        #it "has properties" do
-          #page.should have_content('"name":"Setting intensity"')
-        #end
+        ##it "has contains_locations" do
+          ##page.should have_content(room.uri)
+        ##end
 
-        #it "has properties" do
-          #page.should have_content('"name":"Lighting"')
-        #end
+        ##it "has contiains_devices" do
+          ##page.should have_content('"name":"Setting intensity"')
+        ##end
       #end
 
       #it "exposes the location URI" do
-        #visit @uri
-        #uri = "http://www.example.com/locations/#{@resource.id.as_json}"
-        #@resource.uri.should == uri
+        #visit uri
+        #uri = "http://www.example.com/locations/#{resource.id}"
+        #resource.uri.should == uri
       #end
 
       #context "with host" do
+
         #it "changes the URI" do
-          #visit "#{@uri}?host=www.lelylan.com"
-          #@resource.uri.should match("http://www.lelylan.com/")
-        #end
-      #end
-
-      #context "with public resources" do
-        #before { @uri = "/locations/#{@resource_not_owned._id}" }
-
-        #it "views the not owned resource" do
-          #visit @uri
-          #page.status_code.should == 200
-          #should_have_location @resource_not_owned
+          #visit "#{uri}?host=www.lelylan.com"
+          #resource.uri.should match("http://www.lelylan.com/")
         #end
       #end
     #end

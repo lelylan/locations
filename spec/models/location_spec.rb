@@ -55,4 +55,63 @@ describe Location do
       end
     end
   end
+
+  context "with parent" do
+
+    let(:floor) do
+      FactoryGirl.create :floor, :with_parent
+    end
+
+    it "has parent" do
+      floor.parent.name.should == 'House'
+    end
+  end
+
+  context "with ancestors" do
+
+    let(:floor) do
+      FactoryGirl.create :floor, :with_ancestors
+    end
+
+    it "has parent" do
+      floor.ancestors.should have(2).items
+    end
+  end
+
+  context "with children" do
+
+    let(:floor) do
+      FactoryGirl.create :floor, :with_children
+    end
+
+    it "has parent" do
+      floor.children.should have(1).items
+    end
+  end
+
+  context "with descendants" do
+
+    let(:floor) do
+      FactoryGirl.create :floor, :with_descendants
+    end
+
+    it "has parent" do
+      floor.descendants.should have(2).items
+    end
+  end
+
+  context "when parent is deleted" do
+
+    let!(:floor) do
+      FactoryGirl.create :floor, :with_parent
+    end
+
+    before do
+      floor.parent.destroy
+    end
+
+    it "deletes children" do
+      Location.all.should have(0).items
+    end
+  end
 end

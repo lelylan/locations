@@ -61,5 +61,4 @@ class LocationsController < ApplicationController
       params[:per] = Settings.pagination.max_per if params[:per] > Settings.pagination.max_per
       @locations = @locations.where("id > ?", find_id_from_uri(params[:start])) if params[:start]
     end
-
 end
