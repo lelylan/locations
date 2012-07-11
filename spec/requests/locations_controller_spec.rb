@@ -14,7 +14,7 @@ feature "LocationsController" do
       "/locations"
     end
 
-    let!(:root) do
+    let!(:resource) do
       FactoryGirl.create :root
     end
 
@@ -33,76 +33,94 @@ feature "LocationsController" do
       it "shows all owned resources" do
         visit uri
         page.status_code.should == 200
-        should_have_owned_location root
+        should_have_owned_location resource
       end
 
 
-      ## ---------
-      ## Search
-      ## ---------
-      #shared_examples "searching location" do
-        #context "#name" do
-          #before { @name = "My name is location" }
-          #before { @result = FactoryGirl.create(:location_no_connections, name: @name) }
+      # ---------
+      # Search
+      # ---------
+      context "when searching" do
 
-          #it "finds the desired location" do
-            #visit "#{@uri}?name=name+is"
-            #should_contain_location @result
-            #page.should_not have_content @resource.name
-          #end
-        #end
-      #end
+        context "#name" do
+
+          let(:name) do
+            "My name is location"
+          end
+
+          let!(:result) do 
+            FactoryGirl.create(:location, name: name)
+          end
+
+          it "returns the searched location" do
+            visit "#{uri}?name=name+is"
+            should_contain_location result
+            page.should_not have_content resource.name
+          end
+        end
+      end
 
 
-      ## ------------
-      ## Pagination
-      ## ------------
-      #shared_examples "paginating location" do
-        #before { Location.destroy_all }
-        #before { @resource = LocationDecorator.decorate(FactoryGirl.create(:location_no_connections)) }
-        #before { @resources = FactoryGirl.create_list(:location, Settings.pagination.per + 5, name: 'Extra location') }
+      # ------------
+      # Pagination
+      # ------------
+      context "paginating location" do
 
-        #context "with :start" do
-          #it "shows the next page" do
-            #visit "#{@uri}?start=#{@resource.uri}"
-            #page.status_code.should == 200
-            #should_contain_location @resources.first
-            #page.should_not have_content @resource.name
-          #end
-        #end
+        let!(:resource) do
+          LocationDecorator.decorate(FactoryGirl.create(:location))
+        end
 
-        #context "with :per" do
-          #context "when not set" do
-            #it "shows the default number of resources" do
-              #visit "#{@uri}"
-              #JSON.parse(page.source).should have(Settings.pagination.per).items
-            #end
-          #end
+        let!(:resources) do 
+          FactoryGirl.create_list(:location, Settings.pagination.per + 5, name: 'Extra location')
+        end
 
-          #context "when set to 5" do
-            #it "shows 5 resources" do
-              #visit "#{@uri}?per=5"
-              #JSON.parse(page.source).should have(5).items
-            #end
-          #end
+        context "with :start" do
 
-          #context "when set too high value" do
-            #before { Settings.pagination.max_per = 30 }
+          it "shows the next page" do
+            visit "#{uri}?start=#{resource.uri}"
+            page.status_code.should == 200
+            should_contain_location resources.first
+            page.should_not have_content resource.name
+          end
+        end
 
-            #it "shows the max number of resources allowed" do
-              #visit "#{@uri}?per=100000"
-              #JSON.parse(page.source).should have(30).items
-            #end
-          #end
+        context "with :per" do
 
-          #context "when set to not valid value" do
-            #it "shows the default number of resources" do
-              #visit "#{@uri}?per=not_valid"
-              #JSON.parse(page.source).should have(Settings.pagination.per).items
-            #end
-          #end
-        #end
-      #end
+          context "when not set" do
+
+            it "shows the default number of resources" do
+              visit uri
+              JSON.parse(page.source).should have(Settings.pagination.per).items
+            end
+          end
+
+          context "when set to 5" do
+
+            it "shows 5 resources" do
+              visit "#{uri}?per=5"
+              JSON.parse(page.source).should have(5).items
+            end
+          end
+
+          context "when set too high value" do
+
+            before { Settings.pagination.max_per = 30 }
+
+            it "shows the max number of allowed resources" do
+              visit "#{uri}?per=100000"
+              JSON.parse(page.source).should have(30).items
+            end
+          end
+
+          context "when set to a not valid value" do
+
+            it "shows the default number of resources" do
+              visit "#{uri}?per=not_valid"
+              JSON.parse(page.source).should have(Settings.pagination.per).items
+            end
+          end
+        end
+      end
     end
   end
 

@@ -47,22 +47,19 @@ class LocationsController < ApplicationController
       @locations = Location.where(created_from: current_user.uri)
     end
 
-    def find_all_resources
-      @locations = Location.all
-    end
-
     def find_resource
       @location = @locations.find(params[:id])
+    end
+
+    def search_params
+      @locations = @locations.where("name like ?", "%#{params[:name]}%") if params[:name]
     end
 
     def pagination
       params[:per] = (params[:per] || Settings.pagination.per).to_i
       params[:per] = Settings.pagination.per if params[:per] == 0 
       params[:per] = Settings.pagination.max_per if params[:per] > Settings.pagination.max_per
-      @locations = @locations.gt(_id: find_id_from_uri(params[:start])) if params[:start]
+      @locations = @locations.where("id > ?", find_id_from_uri(params[:start])) if params[:start]
     end
 
-    def search_params
-      @locations = @locations.where('name' => /.*#{params[:name]}.*/i) if params[:name]
-    end 
 end
