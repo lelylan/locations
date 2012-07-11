@@ -11,7 +11,7 @@ guard 'spork', :cucumber_env => { 'RAILS_ENV' => 'test' }, :rspec_env => { 'RAIL
   watch('Gemfile')
   watch('Gemfile.lock')
   watch('spec/spec_helper.rb') { :rspec }
-  watch(%r{features/support/}) { :cucumber }
+  watch(%r{^app/decorators/.+\.rb$})
 end
 
 
@@ -31,6 +31,7 @@ guard 'rspec', cli: '--drb --format Fuubar --color', all_on_start: false, all_af
   watch(%r{^app/controllers/(.+)\.rb})                   { |m| "spec/requests/#{m[1]}_spec.rb" }  
   watch(%r{^app/decorators/(.+)_decorator\.rb$})         { |m| "spec/requests/#{m[1]}_controller_spec.rb" }
   watch(%r{^spec/requests/support/views/(.+)_view\.rb$}) { |m| "spec/requests/#{m[1]}_controller_spec.rb" }
+  watch(%r{^spec/factories/(.+)\.rb$})                   { "spec" }
   watch(%r{^spec/support/(.+)\.rb$})                     { "spec" }
   watch('app/controllers/application_controller.rb')     { "spec/requests" }
 end

@@ -28,6 +28,7 @@ group :development, :test do
   gem 'guard-spork'
   gem 'guard-rspec'
   gem 'rails_best_practices'
+  gem 'test-unit'
 end
 
 group :test do
