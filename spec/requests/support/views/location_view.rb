@@ -21,6 +21,7 @@ module LocationsViewMethods
     json.uri.should == location.uri
     json.id.should == location.id.to_s
     json.name.should == location.name
+    json.type.should == location.type
 
     should_have_parent(json, location)
     should_have_ancestors(json, location)

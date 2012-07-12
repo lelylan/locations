@@ -4,14 +4,17 @@ Settings.reload!
 FactoryGirl.define do
   factory :location, aliases: ['house', 'root'] do
     name 'House'
+    type 'house'
     created_from Settings.user.uri
 
     factory 'Floor' do
       name 'Floor'
+      type 'floor'
     end
 
     factory 'Room' do
       name 'Room'
+      type 'room'
     end
 
     factory :location_not_owned do

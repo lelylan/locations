@@ -54,6 +54,7 @@ class LocationsController < ApplicationController
 
     def search_params
       @locations = @locations.where("name like ?", "%#{params[:name]}%") if params[:name]
+      @locations = @locations.where(type: params[:type]) if params[:type]
     end
 
     def pagination

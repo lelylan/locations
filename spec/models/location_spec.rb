@@ -4,9 +4,15 @@ describe Location do
 
   it { should validate_presence_of('name') }
 
+  it { should validate_presence_of('type') }
+
   it { Settings.validation.uris.valid.each {|uri| should allow_value(uri).for(:parent)} }
 
   it { Settings.validation.uris.not_valid.each {|uri| should_not allow_value(uri).for(:parent)} }
+
+  it { Settings.locations.types.each {|type| should allow_value(type).for(:type)} }
+
+  it { [nil, '', 'not_valid'].each {|type| should_not allow_value(type).for(:type)} }
 
   context "when adds parent" do
     context "when not owned" do
@@ -144,7 +150,7 @@ describe Location do
     end
 
     let!(:children) do
-      root.children.create(name: 'Child')
+      root.children.create(name: 'Child', type: 'room')
     end
 
     it "creates a child" do

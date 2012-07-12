@@ -58,6 +58,19 @@ feature "LocationsController" do
             page.should_not have_content resource.name
           end
         end
+
+        context "#type" do
+
+          let!(:result) do 
+            FactoryGirl.create :room, type: 'room'
+          end
+
+          it "returns the searched location" do
+            visit "#{uri}?type=room"
+            should_contain_location result
+            page.should_not have_content resource.name
+          end
+        end
       end
 
 
@@ -262,7 +275,8 @@ feature "LocationsController" do
 
       let(:params) do
         { 
-          name: 'Magic floor', 
+          name: 'Magic floor',
+          type: 'floor',
           parent: LocationDecorator.decorate(floor.the_parent).uri, 
           locations: [
             LocationDecorator.decorate(floor.children.first).uri,

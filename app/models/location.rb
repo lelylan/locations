@@ -3,13 +3,15 @@ class Location < ActiveRecord::Base
 
   acts_as_nested_set
   alias_method :the_parent, :parent # use parent as attribute for the mass assignment
+  self.inheritance_column = :_type_disabled
 
   serialize :devices, Array
 
   attr_accessor :parent, :locations
-  attr_accessible :name, :devices, :parent, :locations
+  attr_accessible :name, :devices, :parent, :locations, :type
 
   validates :name, presence: true
+  validates :type, presence: true, inclusion: { in: Settings.locations.types }
   validates :parent, uri: { allow_nil: true }, owned: true
   validates :locations, uri: true, owned: true
 

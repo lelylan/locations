@@ -1,4 +1,5 @@
 pagination:
   per: 25
   max_per: 100
-
+locations:
+  types: ['house', 'floor', 'room', 'zone']
