@@ -14,7 +14,11 @@ class Location < ActiveRecord::Base
   validates :locations, uri: true, owned: true
 
   after_save :find_parent, :find_children
+  before_update :move_children_to_root
 
+  def move_children_to_root
+    children.each { |child| child.move_to_root }
+  end
 
   private
 

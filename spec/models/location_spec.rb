@@ -193,15 +193,11 @@ describe Location do
   context "when parent is deleted" do
 
     let!(:floor) do
-      FactoryGirl.create :floor, :with_parent
+      FactoryGirl.create :floor, :with_children
     end
 
-    before do
-      floor.the_parent.destroy
-    end
-
-    it "deletes children" do
-      Location.all.should have(0).items
+    it "set children as root" do
+      expect{ floor.delete }.to change{ Location.count }.by(-1)
     end
   end
 end
