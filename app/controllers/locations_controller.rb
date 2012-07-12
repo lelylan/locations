@@ -36,7 +36,8 @@ class LocationsController < ApplicationController
 
   def destroy
     render 'show'
-    @location.destroy
+    @location.move_children_to_root
+    @location.delete
   end
 
 

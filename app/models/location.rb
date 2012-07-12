@@ -17,7 +17,7 @@ class Location < ActiveRecord::Base
   before_update :move_children_to_root
 
   def move_children_to_root
-    children.each { |child| child.move_to_root }
+    children.each { |child| child.move_to_root } if locations
   end
 
   private

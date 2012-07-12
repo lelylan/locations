@@ -24,8 +24,7 @@ describe Location do
       end
     end
 
-    # TODO: should be caught from URI validator
-    # Try to add an options to it telling that it is or not an array like {array: true}
+    # TODO should be caught from URI validator. Try to add an options to it telling that it is or not an array like {array: true}
     context "when is an array and not a string" do
 
       let!(:house) do
@@ -101,6 +100,39 @@ describe Location do
 
       it "adds locations" do
         expect{ FactoryGirl.create :floor, locations: locations }.to raise_error(ActiveRecord::RecordInvalid)
+      end
+    end
+
+    context "when existing locations" do
+
+      let!(:floor) do
+        FactoryGirl.create :floor, :with_children
+      end
+
+      context "with empty locations" do
+
+        let(:locations) do
+          []
+        end
+
+        before do
+          floor.update_attributes(locations: locations)
+        end
+
+        it "adds locations" do
+          floor.children.should have(0).item
+        end
+      end
+
+      context "with no locations" do
+
+        before do
+          floor.update_attributes(name: "Update")
+        end
+
+        it "leaves previous locations" do
+          floor.children.should have(1).item
+        end
       end
     end
   end
