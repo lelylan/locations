@@ -4,7 +4,7 @@ module ActiveModel
       include Lelylan::Search::URI
 
       def initialize(options)
-        options.reverse_merge!(:message => "A location URI on parent or contained locations is not owned.")
+        options.reverse_merge!(:message => "A location URI on parent or contained locations does not exists.")
         super(options)
       end
 

@@ -1,6 +1,10 @@
 object LocationDecorator.decorate(@location)
 
-attributes :uri, :id, :name, :created_at, :updated_at
+node(:uri)        { |l| l.uri }
+node(:id)         { |l| l.id.to_s }
+node(:name)       { |l| l.name }
+node(:created_at) { |l| l.created_at }
+node(:updated_at) { |l| l.updated_at }
 
 node(:locations) do |location|
   {
@@ -17,3 +21,4 @@ node(:devices) do |location|
     descendants: location.device_descendants_view
   }
 end
+

@@ -22,7 +22,6 @@ class Location < ActiveRecord::Base
 
   private
 
-    # set the parent
     def find_parent
       if parent
         new_parent = find_location(parent)
@@ -30,7 +29,6 @@ class Location < ActiveRecord::Base
       end
     end
 
-    # set the children
     def find_children
       if locations and !locations.empty?
         children = find_locations(locations)
@@ -38,13 +36,11 @@ class Location < ActiveRecord::Base
       end
     end
 
-    # find a location given its URI
     def find_location(uri)
       id = find_id(uri)
       Location.where(id: id).where(created_from: created_from).first
     end
 
-    # find locations given its URIs
     def find_locations(uris)
       ids = find_ids(uris)
       Location.where(id: ids).where(created_from: created_from)

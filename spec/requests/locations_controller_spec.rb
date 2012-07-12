@@ -191,7 +191,6 @@ feature "LocationsController" do
           end
 
           it "has child" do
-            pp children
             page.should have_content(children.uri)
           end
         end
