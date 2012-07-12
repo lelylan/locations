@@ -12,6 +12,7 @@ gem 'rabl'
 gem 'draper'
 gem 'addressable'
 gem 'bcrypt-ruby', :require => "bcrypt"
+gem 'httparty'
 
 group :development, :test do
   gem 'sqlite3'
@@ -28,6 +29,7 @@ group :development, :test do
   gem 'guard-spork'
   gem 'guard-rspec'
   gem 'rails_best_practices'
+  gem 'test-unit'
 end
 
 group :test do

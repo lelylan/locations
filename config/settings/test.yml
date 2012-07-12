@@ -1,0 +1,29 @@
+device:
+  host: <%= device_host = "https://device.lelylan.com" %>
+  uri: <%= "#{device_host}/devices/closet-dimmer" %>
+  another:
+    uri: <%= "#{device_host}/devices/another-closet-dimmer" %>
+  descendants:
+    uri: <%= "#{device_host}/devices/descendant-closet-dimmer" %>
+
+type:
+  host: <%= type_host = "https://type.lelylan.com" %>
+  uri: <%= "#{type_host}/types/dimmer" %>
+  another:
+    uri: <%= "#{type_host}/types/another-dimmer" %>
+
+user: 
+  host: <%= people_host = "https://people.lelylan.com" %>
+  auth: <%= "#{people_host}/authentication" %>
+  uri: <%= "#{people_host}/users/alice" %>
+  email: 'alice@example.com'
+  password: 'example'
+  another: 
+    uri: <%= "#{people_host}/users/bob" %>
+    email: 'bob@example.com'
+
+validation:
+  uris:
+    valid: ['http://example.com', 'http://www.examle.com']
+    not_valid: ['example', 'example.com', 'www.example.com']
+

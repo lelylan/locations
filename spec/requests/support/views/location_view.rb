@@ -21,27 +21,12 @@ module LocationsViewMethods
     json.uri.should == location.uri
     json.id.should == location.id.as_json
     json.name.should == location.name
-    json.public.should == location.public
 
-    properties = Property.in(_id: location.property_ids)
-    json.properties.each_with_index do |json_property, index|
-      should_have_property(properties[index], json_property)
-    end
-
-    functions = Function.in(_id: location.function_ids)
-    json.functions.each_with_index do |json_function, index|
-      should_have_function(functions[index], json_function)
-    end
-
-    statuses = Status.in(_id: location.status_ids)
-    json.statuses.each_with_index do |json_status, index|
-      should_have_status(statuses[index], json_status)
-    end
-
-    categories = Category.in(_id: location.category_ids)
-    json.categories.each_with_index do |json_category, index|
-      should_have_category(categories[index], json_category)
-    end
+    #parent = LocationDecorator.decorate(location.parent).uri
+    #json.contained_in.parent.uri.should == parent.uri
+    #json.contained_in.ancestors.each_with_index do |json_property, i|
+      #should_have_property(location.ancestors[i], json_property)
+    #end
   end
 
   def should_not_have_not_owned_locations
