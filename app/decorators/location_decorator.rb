@@ -48,6 +48,6 @@ class LocationDecorator < ApplicationDecorator
     end
 
     def format_device(device)
-      { uri: device[:uri] }
+      { uri: device }
     end
 end
