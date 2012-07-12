@@ -6,7 +6,7 @@ class LocationDecorator < ApplicationDecorator
   end
 
   def parent_view
-    model.parent ? format_location(model.parent) : nil
+    model.the_parent ? format_location(model.the_parent) : nil
   end
 
   def ancestors_view

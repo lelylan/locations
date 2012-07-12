@@ -24,6 +24,8 @@ describe Location do
       end
     end
 
+    # TODO: should be caught from URI validator
+    # Try to add an options to it telling that it is or not an array like {array: true}
     context "when is an array and not a string" do
 
       let!(:house) do
