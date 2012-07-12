@@ -4,9 +4,9 @@ describe Location do
 
   it { should validate_presence_of('name') }
 
-  it { Settings.validation.uris.valid.each {|uri| should allow_value(uri).for(:parent_uri)} }
+  it { Settings.validation.uris.valid.each {|uri| should allow_value(uri).for(:parent)} }
 
-  it { Settings.validation.uris.not_valid.each {|uri| should_not allow_value(uri).for(:parent_uri)} }
+  it { Settings.validation.uris.not_valid.each {|uri| should_not allow_value(uri).for(:parent)} }
 
   context "#parse_parent_uri" do
 
@@ -23,7 +23,7 @@ describe Location do
       context "when adds a child" do
 
         let!(:children) do
-          root.children.create(name: 'Child', parent_uri: root_uri)
+          root.children.create(name: 'Child')
         end
 
         it "creates a child" do
@@ -63,7 +63,7 @@ describe Location do
     end
 
     it "has parent" do
-      floor.parent.name.should == 'House'
+      floor.the_parent.name.should == 'House'
     end
   end
 
@@ -107,7 +107,7 @@ describe Location do
     end
 
     before do
-      floor.parent.destroy
+      floor.the_parent.destroy
     end
 
     it "deletes children" do
