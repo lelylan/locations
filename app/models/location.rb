@@ -1,12 +1,8 @@
-require 'addressable/uri'
-
 class Location < ActiveRecord::Base
   include Lelylan::Search::URI
 
   acts_as_nested_set
-
-  # in this way we can use parent as attribute for the mass assignment
-  alias_method :the_parent, :parent 
+  alias_method :the_parent, :parent # use parent as attribute for the mass assignment
 
   serialize :devices, Array
 
@@ -14,16 +10,15 @@ class Location < ActiveRecord::Base
   attr_accessible :name, :devices, :parent, :locations
 
   validates :name, presence: true
-  # validates :name, owned: true
-  validates :parent, url: { allow_nil: true }
-  #validates :locations, array_url: true
-  #validates :locations, owned: true
+  validates :parent, uri: { allow_nil: true }, owned: true
+  validates :locations, uri: true, owned: true
 
   after_save :find_parent, :find_children
 
 
   private
 
+    # set the parent
     def find_parent
       if parent
         new_parent = find_location(parent)
@@ -31,6 +26,7 @@ class Location < ActiveRecord::Base
       end
     end
 
+    # set the children
     def find_children
       if locations and !locations.empty?
         children = find_locations(locations)
@@ -38,14 +34,16 @@ class Location < ActiveRecord::Base
       end
     end
 
+    # find a location given its URI
     def find_location(uri)
       id = find_id(uri)
       Location.where(id: id).where(created_from: created_from).first
     end
 
+    # find locations given its URIs
     def find_locations(uris)
       ids = find_ids(uris)
       Location.where(id: ids).where(created_from: created_from)
     end
-
 end
+

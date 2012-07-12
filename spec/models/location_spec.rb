@@ -8,95 +8,183 @@ describe Location do
 
   it { Settings.validation.uris.not_valid.each {|uri| should_not allow_value(uri).for(:parent)} }
 
-  context "#parse_parent_uri" do
+  context "when adds parent" do
+    context "when not owned" do
 
-    context "when parent_uri is valid" do
-
-      let(:root) do
-        FactoryGirl.create :root
+      let!(:not_owned) do
+        FactoryGirl.create :location_not_owned
       end
 
-      let(:root_uri) do
-        "http://location.lelylan.com/locations/#{root.id}"
+      let(:parent) do
+        "http://www.example.com/locations/#{not_owned.id}"
       end
 
-      context "when adds a child" do
+      it "adds locations" do
+        expect{ FactoryGirl.create :floor, parent: parent }.to raise_error(ActiveRecord::RecordInvalid)
+      end
+    end
 
-        let!(:children) do
-          root.children.create(name: 'Child')
-        end
+    context "when is an array and not a string" do
 
-        it "creates a child" do
-          root.children.should have(1).item
-        end
+      let!(:house) do
+        FactoryGirl.create :location
+      end
 
-        it "creates a child" do
-          children.parent_id.should == root.id
-        end
+      let(:parent) do
+        [ "http://www.example.com/locations/#{house.id}" ]
+      end
 
-        context "when moves the child to a new parent" do
-
-          let(:parent) do
-            FactoryGirl.create :location, name: 'New parent'
-          end
-
-          before do
-            children.move_to_child_of(parent)
-          end
-
-          it "has the new parent" do
-            parent.children.should have(1).item
-          end
-
-          it "loses the old parent" do
-            root.reload.children.should have(0).items
-          end
-        end
+      it "adds locations" do
+        expect{ FactoryGirl.create :floor, parent: parent }.to raise_error(Lelylan::Errors::ValidURI)
       end
     end
   end
 
-  context "with parent" do
+  context "when adds locations" do
 
-    let(:floor) do
-      FactoryGirl.create :floor, :with_parent
+    let!(:room) do
+      FactoryGirl.create :room
     end
 
-    it "has parent" do
-      floor.the_parent.name.should == 'House'
+    context "when valid URIs" do
+
+      let(:locations) do
+        [ "http://www.example.com/locations/#{room.id}" ]
+      end
+
+      let(:floor) do
+        FactoryGirl.create :floor, locations: locations
+      end
+
+      it "adds locations" do
+        floor.children.should have(1).item
+      end
+    end
+
+    context "when not valid URIs" do
+
+      let(:locations) do
+        [ "not_valid" ]
+      end
+
+      it "adds locations" do
+        expect{ FactoryGirl.create :floor, locations: locations }.to raise_error(ActiveRecord::RecordInvalid)
+      end
+    end
+
+    context "when empty URIs" do
+
+      let(:locations) do
+        []
+      end
+
+      let(:floor) do
+        FactoryGirl.create :floor, locations: locations
+      end
+
+      it "adds locations" do
+        floor.children.should have(0).item
+      end
+    end
+
+    context "when a location is not owned" do
+
+      let!(:not_owned) do
+        FactoryGirl.create :location_not_owned
+      end
+
+      let(:locations) do
+        [ "http://www.example.com/locations/#{not_owned.id}" ]
+      end
+
+      it "adds locations" do
+        expect{ FactoryGirl.create :floor, locations: locations }.to raise_error(ActiveRecord::RecordInvalid)
+      end
     end
   end
 
-  context "with ancestors" do
+  context "when adds a child" do
 
-    let(:floor) do
-      FactoryGirl.create :floor, :with_ancestors
+    let(:root) do
+      FactoryGirl.create :root
     end
 
-    it "has parent" do
-      floor.ancestors.should have(2).items
+    let!(:children) do
+      root.children.create(name: 'Child')
+    end
+
+    it "creates a child" do
+      root.children.should have(1).item
+    end
+
+    it "creates a child" do
+      children.parent_id.should == root.id
+    end
+
+    context "when moves the child to a new parent" do
+
+      let(:parent) do
+        FactoryGirl.create :location, name: 'New parent'
+      end
+
+      before do
+        children.move_to_child_of(parent)
+      end
+
+      it "has the new parent" do
+        parent.children.should have(1).item
+      end
+
+      it "loses the old parent" do
+        root.reload.children.should have(0).items
+      end
     end
   end
 
-  context "with children" do
+  context "when checking relations" do
 
-    let(:floor) do
-      FactoryGirl.create :floor, :with_children
+    context "with parent" do
+
+      let(:floor) do
+        FactoryGirl.create :floor, :with_parent
+      end
+
+      it "has parent" do
+        floor.the_parent.name.should == 'House'
+      end
     end
 
-    it "has parent" do
-      floor.children.should have(1).items
+    context "with ancestors" do
+
+      let(:floor) do
+        FactoryGirl.create :floor, :with_ancestors
+      end
+
+      it "has parent" do
+        floor.ancestors.should have(2).items
+      end
     end
-  end
 
-  context "with descendants" do
+    context "with children" do
 
-    let(:floor) do
-      FactoryGirl.create :floor, :with_descendants
+      let(:floor) do
+        FactoryGirl.create :floor, :with_children
+      end
+
+      it "has parent" do
+        floor.children.should have(1).items
+      end
     end
 
-    it "has parent" do
-      floor.descendants.should have(2).items
+    context "with descendants" do
+
+      let(:floor) do
+        FactoryGirl.create :floor, :with_descendants
+      end
+
+      it "has parent" do
+        floor.descendants.should have(2).items
+      end
     end
   end
 
