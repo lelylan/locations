@@ -24,23 +24,20 @@ Spork.prefork do
   RSpec.configure do |config|
     config.mock_with :rspec
 
-    config.before(:suite) { DatabaseCleaner.strategy = :truncation }
-    config.before(:each)  { DatabaseCleaner.clean }
+    config.before(:suite) { DatabaseCleaner[:active_record].strategy = :transaction }
+    config.before(:each)  { DatabaseCleaner[:active_record].clean }
 
-    config.alias_it_should_behave_like_to :it_validates, "it validates"
-    #config.infer_base_class_for_anonymous_controllers = false
+    config.before(:suite) { DatabaseCleaner[:mongoid].strategy = :truncation }
+    config.before(:each)  { DatabaseCleaner[:mongoid].clean }
   end
 end
 
 
 # This code runs each time you run your specs.
 Spork.each_run do
-  # Factory girl reload
   FactoryGirl.reload
-  # I18n reload
   I18n.backend.reload!
-  # Requires supporting ruby files with custom matchers and macros, etc.
-  # Putting them in here we do load support file changes every time.
-  Dir[Rails.root.join("spec/support/**/*.rb")].each {|f| require f}
-  Dir[Rails.root.join("spec/requests/support/**/*.rb")].each {|f| require f}
+  Dir[Rails.root.join('spec/support/**/*.rb')].each           {|f| require f}
+  Dir[Rails.root.join('spec/requests/support/**/*.rb')].each  {|f| require f}
+  Dir[Rails.root.join('spec/requests/concerns/**/*.rb')].each {|f| require f}
 end
