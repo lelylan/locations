@@ -1,6 +1,6 @@
 module LocationsViewMethods
 
-  def has_owned_location(location)
+  def contains_owned_location(location)
     location = LocationDecorator.decorate(location)
     json = JSON.parse(page.source)
     contains_location(location)

@@ -4,7 +4,7 @@ shared_examples_for 'searchable' do |searchable|
 
   searchable.each do |key, value|
 
-    describe "?#{key}={#{key}}" do
+    describe "?#{key}=:#{key}" do
 
       let!(:result) { FactoryGirl.create :location, key => value, resource_owner_id: user.id.to_s }
 

@@ -5,7 +5,7 @@ shared_examples_for 'paginable' do
   let!(:resource)  { LocationDecorator.decorate(FactoryGirl.create(:location, resource_owner_id: user.id.to_s)) }
   let!(:resources) { FactoryGirl.create_list(:location, Settings.pagination.per + 5, name: 'Extra location', resource_owner_id: user.id.to_s) }
 
-  describe '?start={uri}' do
+  describe '?start=:uri' do
 
     it 'shows the next page' do
       page.driver.get uri, { start: resource.uri }.merge(token)
@@ -15,7 +15,7 @@ shared_examples_for 'paginable' do
     end
   end
 
-  describe '?per={nil}' do
+  describe '?per=:nil' do
 
     it 'shows the default number of resources' do
       page.driver.get uri, token
