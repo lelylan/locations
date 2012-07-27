@@ -8,7 +8,7 @@ shared_examples_for 'paginable' do
   describe '?start=:uri' do
 
     it 'shows the next page' do
-      page.driver.get uri, { start: resource.uri }.merge(token)
+      page.driver.get uri, start: resource.uri
       page.status_code.should == 200
       contains_location resources.first
       page.should_not have_content resource.name
@@ -18,7 +18,7 @@ shared_examples_for 'paginable' do
   describe '?per=:nil' do
 
     it 'shows the default number of resources' do
-      page.driver.get uri, token
+      page.driver.get uri
       JSON.parse(page.source).should have(Settings.pagination.per).items
     end
   end
@@ -26,7 +26,7 @@ shared_examples_for 'paginable' do
   describe '?per=5' do
 
     it 'shows 5 resources' do
-      page.driver.get uri, { per: 5 }.merge(token)
+      page.driver.get uri, per: 5
       JSON.parse(page.source).should have(5).items
     end
   end
@@ -36,7 +36,7 @@ shared_examples_for 'paginable' do
     before { Settings.pagination.max_per = 30 }
 
     it 'shows the max number of allowed resources' do
-      page.driver.get uri, { per: 100000 }.merge(token)
+      page.driver.get uri, per: 100000
       JSON.parse(page.source).should have(30).items
     end
   end
@@ -44,7 +44,7 @@ shared_examples_for 'paginable' do
   context '?per=not-valid' do
 
     it 'shows the default number of resources' do
-      page.driver.get uri, { per: 'not-valid' }.merge(token)
+      page.driver.get uri, per: 'not-valid'
       JSON.parse(page.source).should have(Settings.pagination.per).items
     end
   end

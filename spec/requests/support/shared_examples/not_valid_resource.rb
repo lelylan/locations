@@ -1,4 +1,5 @@
-shared_examples_for "not valid JSON" do |action, options|
+shared_examples_for "not valid json input" do |action, options|
+
   it "gets a not valid notification" do
     params = "I'm not an Hash"
     eval(action)
@@ -8,7 +9,8 @@ shared_examples_for "not valid JSON" do |action, options|
   end
 end
 
-shared_examples_for "not valid params" do |action, options|
+shared_examples_for "check valid params" do |action, options|
+
   it "does not create a resource" do
     params = {}
     eval(action)

@@ -24,32 +24,32 @@ FactoryGirl.define do
 
   trait :with_parent do
     after(:create) do |floor|
-      house = FactoryGirl.create :house
+      house = FactoryGirl.create :house, resource_owner_id: floor.resource_owner_id
       floor.move_to_child_of house
     end
   end
 
   trait :with_ancestors do
     after(:create) do |floor|
-      house = FactoryGirl.create :house
+      house = FactoryGirl.create :house, resource_owner_id: floor.resource_owner_id
       floor.move_to_child_of house
-      complex = FactoryGirl.create :house, name: "Complex of houses"
+      complex = FactoryGirl.create :house, name: "Complex of houses", resource_owner_id: floor.resource_owner_id
       house.move_to_child_of complex
     end
   end
 
   trait :with_children do
     after(:create) do |floor|
-      room = FactoryGirl.create :room
+      room = FactoryGirl.create :room, resource_owner_id: floor.resource_owner_id
       room.move_to_child_of floor
     end
   end
 
   trait :with_descendants do
     after(:create) do |floor|
-      room = FactoryGirl.create :room
+      room = FactoryGirl.create :room, resource_owner_id: floor.resource_owner_id
       room.move_to_child_of floor
-      mini = FactoryGirl.create :room, name: "Bosone", devices: [ { uri: Settings.device.descendants.uri } ]
+      mini = FactoryGirl.create :room, name: "Bosone", devices: [ { uri: Settings.device.descendants.uri } ], resource_owner_id: floor.resource_owner_id
       mini.move_to_child_of room
     end
   end

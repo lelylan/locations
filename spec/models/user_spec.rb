@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Doorkeeper::Application do
+describe User do
 
   let(:user) { FactoryGirl.create :user }
 
