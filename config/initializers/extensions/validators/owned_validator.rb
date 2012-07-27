@@ -13,9 +13,10 @@ module ActiveModel
         validate_owner(record, attribute, value)   if value.kind_of? Array
       end
 
+      # Validate that the URIs I'm trying to connect belongs to the resource owner
       def validate_owner(record, attribute, uris) 
         ids = find_ids(uris)
-        real     = Location.where(id: ids).where(created_from: record.created_from).count
+        real = Location.where(id: ids).where(resource_owner_id: record.resource_owner_id).count
         expected = Location.where(id: ids).count
 
         if not real == expected

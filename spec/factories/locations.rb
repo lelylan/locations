@@ -5,7 +5,7 @@ FactoryGirl.define do
   factory :location, aliases: ['house', 'root'] do
     name 'House'
     type 'house'
-    created_from Settings.user.uri
+    resource_owner_id Settings.user.id
 
     factory 'Floor' do
       name 'Floor'
@@ -18,7 +18,7 @@ FactoryGirl.define do
     end
 
     factory :location_not_owned do
-      created_from Settings.user.another.uri
+      resource_owner_id Settings.user.another.id
     end
   end
 

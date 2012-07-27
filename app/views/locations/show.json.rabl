@@ -1,5 +1,4 @@
 object LocationDecorator.decorate(@location)
-
 node(:uri)        { |l| l.uri }
 node(:id)         { |l| l.id.to_s }
 node(:name)       { |l| l.name }

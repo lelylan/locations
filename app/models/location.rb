@@ -2,12 +2,14 @@ class Location < ActiveRecord::Base
   include Lelylan::Search::URI
 
   acts_as_nested_set
+
   alias_method :the_parent, :parent # use parent as attribute for the mass assignment
+
   self.inheritance_column = :_type_disabled
 
   serialize :devices, Array
 
-  attr_accessor :parent, :locations
+  attr_accessor   :parent, :locations
   attr_accessible :name, :devices, :parent, :locations, :type
 
   validates :name, presence: true
@@ -40,12 +42,12 @@ class Location < ActiveRecord::Base
 
     def find_location(uri)
       id = find_id(uri)
-      Location.where(id: id).where(created_from: created_from).first
+      Location.where(id: id).where(resource_owner_id: resource_owner_id).first
     end
 
     def find_locations(uris)
       ids = find_ids(uris)
-      Location.where(id: ids).where(created_from: created_from)
+      Location.where(id: ids).where(resource_owner_id: resource_owner_id)
     end
 end
 

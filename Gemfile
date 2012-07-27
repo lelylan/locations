@@ -1,6 +1,8 @@
 source 'https://rubygems.org'
 
 gem 'rails', '~>3.2.6'
+gem 'mongoid', '~> 3.0.0.rc'
+gem 'doorkeeper', git: 'https://github.com/andreareginato/doorkeeper', branch: 'mongoid_v3'
 gem 'awesome_nested_set'
 gem 'rabl'
 gem 'yajl-ruby'
@@ -30,6 +32,7 @@ group :development, :test do
   gem 'guard-rspec'
   gem 'rails_best_practices'
   gem 'test-unit'
+  gem 'debugger'
 end
 
 group :test do

@@ -13,14 +13,12 @@ type:
     uri: <%= "#{type_host}/types/another-dimmer" %>
 
 user: 
-  host: <%= people_host = "https://people.lelylan.com" %>
-  auth: <%= "#{people_host}/authentication" %>
-  uri: <%= "#{people_host}/users/alice" %>
-  email: 'alice@example.com'
+  email:    'alice@example.com'
   password: 'example'
-  another: 
-    uri: <%= "#{people_host}/users/bob" %>
+  id:       <%= Moped::BSON::ObjectId('500fb2d4d033a95185000001') %>
+  another:
     email: 'bob@example.com'
+    id:    <%= Moped::BSON::ObjectId('500fb2d4d033a95185000002') %>
 
 validation:
   uris:
