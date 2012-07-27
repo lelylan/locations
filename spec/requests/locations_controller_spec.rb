@@ -23,12 +23,7 @@ feature 'LocationsController' do
       has_owned_location resource
     end
 
-    searchable = { name: 'My name is resource', type: 'room' } 
-    searchable.each do |key, value|
-      describe "?#{key}={#{key}}" do
-        it_behaves_like 'searchable', key, value
-      end
-    end
+    it_behaves_like 'searchable', { name: 'My name is resource', type: 'room' }
 
     it_behaves_like 'paginable'
   end
