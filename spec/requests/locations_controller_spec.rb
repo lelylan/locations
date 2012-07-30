@@ -6,7 +6,7 @@ feature 'LocationsController' do
 
   let!(:application)  { FactoryGirl.create :application }
   let!(:user)         { FactoryGirl.create :user }
-  let!(:access_token) { FactoryGirl.create :access_token, application: application, resource_owner_id: user.id.to_s }
+  let!(:access_token) { FactoryGirl.create :access_token, application: application, scopes: 'write', resource_owner_id: user.id.to_s }
 
   before { page.driver.header 'Authorization', "Bearer #{access_token.token}" }
 

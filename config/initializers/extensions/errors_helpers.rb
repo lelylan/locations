@@ -49,8 +49,8 @@ module Lelylan
       # ----------------
 
       # Not authorized
-      def render_401
-        render 'shared/401', status: 401 and return
+      def doorkeeper_unauthorized_render_options
+        { template: 'shared/401', :status => :unauthorized }
       end
 
       # Not found

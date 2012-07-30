@@ -13,7 +13,6 @@ shared_examples_for "check valid params" do |action, options|
 
   it "does not create a resource" do
     eval(action)
-    save_and_open_page
     page.status_code.should == 422
     has_a_not_valid_resource options
   end
