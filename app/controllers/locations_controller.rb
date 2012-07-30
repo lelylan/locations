@@ -20,7 +20,7 @@ class LocationsController < ApplicationController
     body = JSON.parse(request.body.read)
     @location = Location.new(body)
     @location.resource_owner_id = current_user.id
-    if @location.save
+    if @location.save!
       render 'show', status: 201, location: LocationDecorator.decorate(@location).uri
     else
       render_422 'notifications.resource.not_valid', @location.errors
@@ -29,7 +29,7 @@ class LocationsController < ApplicationController
 
   def update
     body = JSON.parse(request.body.read)
-    if @location.update_attributes(body)
+    if @location.update_attributes!(body)
       render 'show'
     else
       render_422 'notifications.resource.not_valid', @location.errors

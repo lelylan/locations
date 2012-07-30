@@ -1,32 +1,34 @@
 module LocationsViewMethods
 
   def contains_owned_location(location)
-    location = LocationDecorator.decorate(location)
-    json = JSON.parse(page.source)
-    contains_location(location)
+    location = LocationDecorator.decorate location
+    json     = JSON.parse page.source
+    contains_location location
     has_not_not_owned_locations
   end
 
   def contains_location(location)
-    location = LocationDecorator.decorate(location)
-    json = JSON.parse(page.source).first
-    has_location(location, json)
+    location = LocationDecorator.decorate location
+    json     = JSON.parse(page.source).first
+    has_location location, json
   end
 
   def has_location(location, json = nil)
-    location = LocationDecorator.decorate(location)
     has_valid_json
-    json = JSON.parse(page.source) unless json 
-    json = Hashie::Mash.new json
-    json.uri.should == location.uri
-    json.id.should == location.id.to_s
+
+    location = LocationDecorator.decorate location
+    json     = JSON.parse page.source unless json 
+    json     = Hashie::Mash.new json
+
+    json.uri.should  == location.uri
+    json.id.should   == location.id.to_s
     json.name.should == location.name
     json.type.should == location.type
 
-    has_parent(json, location)
-    has_ancestors(json, location)
-    has_children(json, location)
-    has_descendants(json, location)
+    has_parent json, location
+    has_ancestors json, location
+    has_children json, location
+    has_descendants json, location
   end
 
   def has_parent(json, location)

@@ -4,7 +4,7 @@ module ActiveModel
       include Lelylan::Search::URI
 
       def initialize(options)
-        options.reverse_merge!(:message => "A location URI on parent or contained locations does not exists.")
+        options.reverse_merge!(:message => 'URI not existing or not owned.')
         super(options)
       end
 
@@ -15,13 +15,24 @@ module ActiveModel
 
       # Validate that the URIs I'm trying to connect belongs to the resource owner
       def validate_owner(record, attribute, uris) 
-        ids = find_ids(uris)
-        real = Location.where(id: ids).where(resource_owner_id: record.resource_owner_id.to_s).count
-        expected = Location.where(id: ids).count
+        klass    = attribute == :devices ? Device : Location
+        ids      = find_ids(uris)
+        real     = nil
+        expected = nil
 
-        if not real == expected
-          record.errors.add(attribute, options.fetch(:message))
+        if (klass == Device)
+          owner_id = Moped::BSON::ObjectId record.resource_owner_id
+          ids      = ids.map {|id| Moped::BSON::ObjectId(id) }
+          real     = klass.in(id: ids).where(resource_owner_id: owner_id)
+          expected = klass.in(id: ids)
+        else
+          real     = klass.where(id: ids).where(resource_owner_id: record.resource_owner_id.to_s)
+          expected = klass.where(id: ids)
         end
+
+        info = ' IDs are ' + (expected.map(&:id) - real.map(&:id)).join(',') + '.'
+
+        record.errors.add(attribute, options.fetch(:message) + info) if not real.count == expected.count
       end
     end
 
@@ -35,7 +46,7 @@ module ActiveModel
       #     validates_owner :homepage
       #   end
       # Configuration options:
-      # * <tt>:message</tt> - A custom error message (default is: "is not a valid URL").
+      # * <tt>:message</tt> - A custom error message (default is: 'is not a valid URL').
       # * <tt>:allow_nil</tt> - If set to true, skips this validation if the attribute is +nil+ (default is +false+).
       # * <tt>:allow_blank</tt> - If set to true, skips this validation if the attribute is blank (default is +false+).
 
