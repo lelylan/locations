@@ -30,11 +30,11 @@ class Location < ActiveRecord::Base
     descendants.map(&:devices).flatten
   end
 
-  private
-
   def move_children_to_root
     children.each { |child| child.move_to_root } if locations
   end
+
+  private
 
   def find_parent
     if parent
@@ -61,7 +61,7 @@ class Location < ActiveRecord::Base
   end
 
   def set_device_ids
-    self.devices = find_ids(devices).map {|device| Moped::BSON::ObjectId(device) }
+    self.devices = find_ids(devices)
   end
 end
 

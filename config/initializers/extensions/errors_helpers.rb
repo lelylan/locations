@@ -8,6 +8,7 @@ module Lelylan
 
       def self.included(base)
         base.rescue_from ActiveRecord::RecordNotFound, with: :document_not_found
+        base.rescue_from ActiveRecord::RecordInvalid, with: :document_not_valid
         base.rescue_from JSON::ParserError, with: :json_parse_error
         base.rescue_from Lelylan::Errors::Time, with: :lelylan_errors_time
         base.rescue_from Lelylan::Errors::ValidURI, with: :lelylan_errors_uri

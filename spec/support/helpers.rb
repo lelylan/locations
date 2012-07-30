@@ -60,6 +60,6 @@ def json_fixture(file)
 end
 
 # URI generators
-def uri(resource)
+def a_uri(resource)
   "http://www.example.com/#{resource.class.to_s.pluralize.downcase}/#{resource.id}"
 end

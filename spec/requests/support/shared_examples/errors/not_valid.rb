@@ -4,17 +4,16 @@ shared_examples_for "not valid json input" do |action, options|
     params = "I'm not an Hash"
     eval(action)
     page.status_code.should == 422
-    should_have_a_not_valid_resource code: "notifications.json.not_valid", error: "Not valid", method: options[:method]
-    page.should have_content params
+    #has_a_not_valid_resource code: "notifications.json.not_valid", error: "Not valid", method: options[:method]
+    #page.should have_content params
   end
 end
 
 shared_examples_for "check valid params" do |action, options|
 
   it "does not create a resource" do
-    params = {}
     eval(action)
     page.status_code.should == 422
-    should_have_a_not_valid_resource options
+    #has_a_not_valid_resource options
   end
 end

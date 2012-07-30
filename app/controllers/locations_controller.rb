@@ -19,7 +19,7 @@ class LocationsController < ApplicationController
   def create
     body = JSON.parse(request.body.read)
     @location = Location.new(body)
-    @location.resource_owner_id = current_user.id
+    @location.resource_owner_id = current_user.id.to_s
     if @location.save!
       render 'show', status: 201, location: LocationDecorator.decorate(@location).uri
     else

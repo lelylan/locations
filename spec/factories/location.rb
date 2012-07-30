@@ -49,4 +49,15 @@ FactoryGirl.define do
       mini.move_to_child_of room
     end
   end
+
+  trait :with_devices do
+    after(:create) do |floor|
+      device = FactoryGirl.create :device, name: 'Light house', resource_owner_id: floor.resource_owner_id
+      floor.the_parent.devices = [ device.id.to_s ]
+      device = FactoryGirl.create :device, name: 'Light floor', resource_owner_id: floor.resource_owner_id
+      floor.devices = [ device.id.to_s ]
+      device = FactoryGirl.create :device, name: 'Light room', resource_owner_id: floor.resource_owner_id
+      floor.children.first.devices = [ device.id.to_s ]
+    end
+  end
 end
