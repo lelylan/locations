@@ -30,11 +30,16 @@ class Location < ActiveRecord::Base
     descendants.map(&:devices).flatten
   end
 
-  def move_children_to_root
-    children.each { |child| child.move_to_root } if locations
+  def safe_destroy
+    children.each { |child| child.move_to_root }
+    destroy
   end
 
   private
+
+  def move_children_to_root
+    children.each { |child| child.move_to_root } if locations
+  end
 
   def find_parent
     if parent
