@@ -61,27 +61,27 @@ feature 'LocationsController' do
       devices:   [ DeviceDecorator.decorate(device).uri ]
     }}
 
-    it 'creates the resource' do
-      page.driver.post uri, params.to_json
-      resource = Location.last
-      page.status_code.should == 201
-      has_location resource
-    end
+    #it 'creates the resource' do
+      #page.driver.post uri, params.to_json
+      #resource = Location.last
+      #page.status_code.should == 201
+      #has_location resource
+    #end
 
-    describe 'resource connections' do
+    #describe 'resource connections' do
 
-      before { page.driver.post uri, params.to_json }
+      #before { page.driver.post uri, params.to_json }
 
-      let(:resources) { Location.last }
+      #let(:resources) { Location.last }
 
-      it 'creates the resource connections' do
-        print page.source
-        resource.the_parent.should_not == nil
-        resource.ancestors.should   have(2).itmes
-        resource.children.should    have(1).item
-        resource.descendants.should have(2).items
-      end
-    end
+      #it 'creates the resource connections' do
+        #print page.source
+        #resource.the_parent.should_not == nil
+        #resource.ancestors.should   have(2).itmes
+        #resource.children.should    have(1).item
+        #resource.descendants.should have(2).items
+      #end
+    #end
 
     #it 'stores the resource' do
       #expect{ page.driver.post(uri, params.to_json) }.to change{ Location.count }.by(1)
