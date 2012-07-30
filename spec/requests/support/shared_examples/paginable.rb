@@ -1,5 +1,3 @@
-require File.expand_path(File.dirname(__FILE__) + '/../acceptance_helper')
-
 shared_examples_for 'paginable' do
 
   let!(:resource)  { LocationDecorator.decorate(FactoryGirl.create(:location, resource_owner_id: user.id.to_s)) }

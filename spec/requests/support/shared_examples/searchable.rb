@@ -1,5 +1,3 @@
-require File.expand_path(File.dirname(__FILE__) + '/../acceptance_helper')
-
 shared_examples_for 'searchable' do |searchable|
 
   searchable.each do |key, value|

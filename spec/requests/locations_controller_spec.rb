@@ -14,8 +14,7 @@ feature 'LocationsController' do
 
     let!(:resource)  { FactoryGirl.create :root, resource_owner_id: user.id.to_s }
     let!(:not_owned) { FactoryGirl.create :root }
-
-    let(:uri) { '/locations' }
+    let(:uri)        { '/locations' }
 
     it 'shows all owned resources' do
       page.driver.get uri
@@ -31,8 +30,7 @@ feature 'LocationsController' do
   context 'GET /locations/:id' do
 
     let!(:resource) { LocationDecorator.decorate FactoryGirl.create(:floor, :with_ancestors, :with_descendants, :with_devices, resource_owner_id: user.id.to_s) }
-
-    let(:uri) { "/locations/#{resource.id}" }
+    let(:uri)       { "/locations/#{resource.id}" }
 
     it 'view the owned resource' do
       page.driver.get uri
@@ -46,8 +44,7 @@ feature 'LocationsController' do
   context 'POST /locations' do
 
     let(:uri) { '/locations' }
-
-    before { page.driver.get uri }
+    before    { page.driver.get uri } # let us use the decorators before calling the POST method
 
     let(:parent) { FactoryGirl.create(:house, resource_owner_id: user.id.to_s) }
     let(:child)  { FactoryGirl.create(:room, resource_owner_id: user.id.to_s) }
