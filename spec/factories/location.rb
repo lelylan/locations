@@ -52,12 +52,14 @@ FactoryGirl.define do
 
   trait :with_devices do
     after(:create) do |floor|
-      device = FactoryGirl.create :device, name: 'Light house', resource_owner_id: floor.resource_owner_id
-      floor.the_parent.devices = [ device.id.to_s ]
-      device = FactoryGirl.create :device, name: 'Light floor', resource_owner_id: floor.resource_owner_id
-      floor.devices = [ device.id.to_s ]
-      device = FactoryGirl.create :device, name: 'Light room', resource_owner_id: floor.resource_owner_id
-      floor.children.first.devices = [ device.id.to_s ]
+      device_house = FactoryGirl.create :device, name: 'Light house', resource_owner_id: floor.resource_owner_id
+      floor.the_parent.update_attributes devices: [ a_uri(device_house) ]
+
+      device_floor = FactoryGirl.create :device, name: 'Light floor', resource_owner_id: floor.resource_owner_id
+      floor.update_attributes devices: [ a_uri(device_floor) ]
+
+      device_room = FactoryGirl.create :device, name: 'Light room', resource_owner_id: floor.resource_owner_id
+      floor.children.first.update_attributes devices: [ a_uri(device_room) ]
     end
   end
 end

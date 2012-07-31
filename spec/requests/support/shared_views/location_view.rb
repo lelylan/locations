@@ -25,39 +25,48 @@ module LocationsViewMethods
     json.name.should == location.name
     json.type.should == location.type
 
-    has_parent json, location
-    has_ancestors json, location
-    has_children json, location
-    has_descendants json, location
+    if not Location.where(id: location.id).count == 0 # avoid problems when resource is deleted
+      has_parent json, location
+      has_ancestors json, location
+      has_locations json, location
+    end
   end
 
   def has_parent(json, location)
     if location.the_parent
       parent = LocationDecorator.decorate(location.the_parent)
-      json.locations.parent.uri.should == parent.uri if parent
+      json.parent.uri.should  == parent.uri
+      json.parent.name.should == parent.name
+      json.parent.id.should   == parent.id
     else
-      json.locations.parent.should == nil
+      json.parent.should == nil
     end
   end
 
   def has_ancestors(json, location)
     ancestors = LocationDecorator.decorate(location.ancestors)
-    json.locations.ancestors.each_with_index do |json_ancestor, i|
-      json_ancestor.uri.should == ancestors[i].uri
+    json.ancestors.each_with_index do |json_ancestor, i|
+      json_ancestor.uri.should  == ancestors[i].uri
+      json_ancestor.name.should == ancestors[i].name
+      json_ancestor.id.should   == ancestors[i].id
     end
   end
 
-  def has_children(json, location)
-    children = LocationDecorator.decorate(location.children)
-    json.locations.children.each_with_index do |json_child, i|
-      json_child.uri.should == children[i].uri
+  def has_locations(json, location)
+    locations = LocationDecorator.decorate(location.children)
+    json.locations.each_with_index do |json_child, i|
+      json_child.uri.should  == locations[i].uri
+      json_child.name.should == locations[i].name
+      json_child.id.should   == locations[i].id
     end
   end
 
-  def has_descendants(json, location)
-    descendants = LocationDecorator.decorate(location.descendants)
-    json.locations.descendants.each_with_index do |json_descendant, i|
-      json_descendant.uri.should == descendants[i].uri
+  def has_devices(json, location)
+    devices = Device.in(id: location.devices.map {|id| Moped::BSON::ObjectId(id)} )
+    json.locations.each_with_index do |json_child, i|
+      json_child.uri.should  == devices[i].uri
+      json_child.name.should == devices[i].name
+      json_child.id.should   == devices[i].id
     end
   end
 

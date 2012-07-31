@@ -133,7 +133,7 @@ feature 'LocationsController' do
     let!(:not_owned) { FactoryGirl.create(:floor) }
     let(:uri)        { "/locations/#{resource.id}" }
 
-    scenario 'delete resource' do
+    it 'deletes resource' do
       expect { page.driver.delete(uri) }.to change{ Location.count }.by(-1)
       page.status_code.should == 200
       has_location resource

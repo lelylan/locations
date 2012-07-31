@@ -39,6 +39,11 @@ feature 'Scope' do
       page.driver.delete "/locations/#{resource.id}"
       has_unauthorized_resource
     end
+
+    it 'authorizes GET /locations/:id/descendants' do
+      page.driver.get "/locations/#{resource.id}/descendants"
+      page.status_code.should == 200
+    end
   end
 
   describe ':write' do
@@ -70,6 +75,11 @@ feature 'Scope' do
 
     it 'authorizes DELETE /locations/:id' do
       page.driver.delete "/locations/#{resource.id}"
+      page.status_code.should == 200
+    end
+    
+    it 'authorizes GET /locations/:id/descendants' do
+      page.driver.get "/locations/#{resource.id}/descendants"
       page.status_code.should == 200
     end
   end

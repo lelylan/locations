@@ -9,7 +9,6 @@ class LocationsController < ApplicationController
   before_filter :search_params, only: %w(index)
   before_filter :pagination, only: %w(index)
 
-
   def index
     @locations = @locations.limit(params[:per])
   end
@@ -42,26 +41,25 @@ class LocationsController < ApplicationController
     @location.safe_destroy
   end
 
-
   private
 
-    def find_owned_resources
-      @locations = Location.where(resource_owner_id: current_user.id.to_s)
-    end
+  def find_owned_resources
+    @locations = Location.where(resource_owner_id: current_user.id.to_s)
+  end
 
-    def find_resource
-      @location = @locations.find(params[:id])
-    end
+  def find_resource
+    @location = @locations.find(params[:id])
+  end
 
-    def search_params
-      @locations = @locations.where('name like ?', "%#{params[:name]}%") if params[:name]
-      @locations = @locations.where(type: params[:type]) if params[:type]
-    end
+  def search_params
+    @locations = @locations.where('name like ?', "%#{params[:name]}%") if params[:name]
+    @locations = @locations.where(type: params[:type]) if params[:type]
+  end
 
-    def pagination
-      params[:per] = (params[:per] || Settings.pagination.per).to_i
-      params[:per] = Settings.pagination.per if params[:per] == 0 
-      params[:per] = Settings.pagination.max_per if params[:per] > Settings.pagination.max_per
-      @locations = @locations.where('id > ?', find_id(params[:start])) if params[:start]
-    end
+  def pagination
+    params[:per] = (params[:per] || Settings.pagination.per).to_i
+    params[:per] = Settings.pagination.per if params[:per] == 0 
+    params[:per] = Settings.pagination.max_per if params[:per] > Settings.pagination.max_per
+    @locations = @locations.where('id > ?', find_id(params[:start])) if params[:start]
+  end
 end
