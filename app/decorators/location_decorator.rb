@@ -15,39 +15,34 @@ class LocationDecorator < ApplicationDecorator
     end
   end
 
-  def children_view
+  def locations_view
     model.children.map do |location|
       format_location(location)
     end
   end
 
-  def descendants_view
-    model.descendants.map do |location|
-      format_location(location)
-    end
-  end
-
-  def device_children_view
-    model.devices.map do |device|
-      format_device(device)
-    end
-  end
-
-  def device_descendants_view
-    model.self_and_descendants.map do |location|
-      location.devices.map do |device|
-        format_device(device)
-      end
-    end.flatten
+  # TODO to improve making just one query (use something like identity map)
+  # on descendants views as we make a query for every locations
+  def devices_view
+    devices = Device.in(id: model.devices.map {|id| Moped::BSON::ObjectId(id)} )
+    devices.map { |device| format_device(device) }
   end
 
   private
 
-    def format_location(location)
-      { uri: LocationDecorator.decorate(location).uri }
-    end
+  def format_location(location)
+    { 
+      uri: LocationDecorator.decorate(location).uri,
+      id: location.id,
+      name: location.name
+    }
+  end
 
-    def format_device(device)
-      { uri: device }
-    end
+  def format_device(device)
+    { 
+      uri: DeviceDecorator.decorate(device).uri,
+      id: device.id,
+      name: device.name
+    }
+  end
 end

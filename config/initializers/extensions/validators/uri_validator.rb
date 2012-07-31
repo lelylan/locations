@@ -4,7 +4,7 @@ module ActiveModel
 
       def initialize(options)
         options.reverse_merge!(:schemes => %w(http https))
-        options.reverse_merge!(:message => "is not a valid URL")
+        options.reverse_merge!(:message => 'is not a valid URL')
         super(options)
       end
 
@@ -37,7 +37,7 @@ module ActiveModel
       #     validates_url :ftpsite, :schemes => ['ftp']
       #   end
       # Configuration options:
-      # * <tt>:message</tt> - A custom error message (default is: "is not a valid URL").
+      # * <tt>:message</tt> - A custom error message (default is: 'is not a valid URL').
       # * <tt>:allow_nil</tt> - If set to true, skips this validation if the attribute is +nil+ (default is +false+).
       # * <tt>:allow_blank</tt> - If set to true, skips this validation if the attribute is blank (default is +false+).
       # * <tt>:schemes</tt> - Array of URI schemes to validate against. (default is +['http', 'https']+)

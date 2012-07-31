@@ -46,8 +46,6 @@ def stub_delete(path, auth=true)
   stub_request(:delete, path).with(headers: mock_headers)
 end
 
-
-
 # Fixtures
 def fixtures_path
   File.expand_path("../../fixtures", __FILE__)
@@ -61,13 +59,7 @@ def json_fixture(file)
   HashWithIndifferentAccess.new JSON.parse fixture(file).read
 end
 
-# Basic Authenticatin definition
-# ActionController::HttpAuthentication::Basic.encode_credentials user, password
-def authenticated(path)
-  protocol = "https://"
-  path = path.gsub(protocol, '')
-  path = "#{Lelylan::Type.username}:#{Lelylan::Type.password}@#{path}"
-  path = "#{protocol}#{path}"
-  return path
+# URI generators
+def a_uri(resource)
+  "http://www.example.com/#{resource.class.to_s.pluralize.downcase}/#{resource.id}"
 end
-

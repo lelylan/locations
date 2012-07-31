@@ -3,9 +3,4 @@ class ApplicationDecorator < Draper::Base
     host = h.params[:host] || h.request.host_with_port
     { only_path: false, host: host }
   end
-
-  def type_uri
-    "#{host}/locations/types/#{model.type}"
-  end
-
 end

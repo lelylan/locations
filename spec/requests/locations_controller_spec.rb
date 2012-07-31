@@ -1,430 +1,144 @@
 require File.expand_path(File.dirname(__FILE__) + '/acceptance_helper')
 
-feature "LocationsController" do
-  before { Location.destroy_all }
-  before { host! "http://" + host }
+feature 'LocationsController' do
 
-  # -----------------
-  # GET /locations
-  # ----------------
+  before { Location.delete_all }
 
-  context ".index" do
+  let!(:application)  { FactoryGirl.create :application }
+  let!(:user)         { FactoryGirl.create :user }
+  let!(:access_token) { FactoryGirl.create :access_token, application: application, scopes: 'write', resource_owner_id: user.id }
 
-    let(:uri) do
-      "/locations"
+  before { page.driver.header 'Authorization', "Bearer #{access_token.token}" }
+
+  describe 'GET /locations' do
+
+    let!(:resource)  { FactoryGirl.create :root, resource_owner_id: user.id }
+    let!(:not_owned) { FactoryGirl.create :root }
+    let(:uri)        { '/locations' }
+
+    it 'shows all owned resources' do
+      page.driver.get uri
+      page.status_code.should == 200
+      contains_owned_location resource
     end
 
-    let!(:resource) do
-      FactoryGirl.create :root
-    end
+    it_behaves_like 'searchable', { name: 'My name is resource', type: 'room' }
 
-    let!(:resource_not_owned) do
-      FactoryGirl.create :location_not_owned
-    end
-
-    it_should_behave_like "not authorized resource", "visit(uri)"
-
-    context "when logged in" do
-
-      before do
-        basic_auth
-      end
-
-      it "shows all owned resources" do
-        visit uri
-        page.status_code.should == 200
-        should_have_owned_location resource
-      end
-
-
-      # ---------
-      # Search
-      # ---------
-      context "when searching" do
-
-        context "#name" do
-
-          let(:name) do
-            "My name is location"
-          end
-
-          let!(:result) do 
-            FactoryGirl.create(:location, name: name)
-          end
-
-          it "returns the searched location" do
-            visit "#{uri}?name=name+is"
-            should_contain_location result
-            page.should_not have_content resource.name
-          end
-        end
-
-        context "#type" do
-
-          let!(:result) do 
-            FactoryGirl.create :room, type: 'room'
-          end
-
-          it "returns the searched location" do
-            visit "#{uri}?type=room"
-            should_contain_location result
-            page.should_not have_content resource.name
-          end
-        end
-      end
-
-
-      # ------------
-      # Pagination
-      # ------------
-      context "paginating location" do
-
-        let!(:resource) do
-          LocationDecorator.decorate(FactoryGirl.create(:location))
-        end
-
-        let!(:resources) do 
-          FactoryGirl.create_list(:location, Settings.pagination.per + 5, name: 'Extra location')
-        end
-
-        context "with :start" do
-
-          it "shows the next page" do
-            visit "#{uri}?start=#{resource.uri}"
-            page.status_code.should == 200
-            should_contain_location resources.first
-            page.should_not have_content resource.name
-          end
-        end
-
-        context "with :per" do
-
-          context "when not set" do
-
-            it "shows the default number of resources" do
-              visit uri
-              JSON.parse(page.source).should have(Settings.pagination.per).items
-            end
-          end
-
-          context "when set to 5" do
-
-            it "shows 5 resources" do
-              visit "#{uri}?per=5"
-              JSON.parse(page.source).should have(5).items
-            end
-          end
-
-          context "when set too high value" do
-
-            before { Settings.pagination.max_per = 30 }
-
-            it "shows the max number of allowed resources" do
-              visit "#{uri}?per=100000"
-              JSON.parse(page.source).should have(30).items
-            end
-          end
-
-          context "when set to a not valid value" do
-
-            it "shows the default number of resources" do
-              visit "#{uri}?per=not_valid"
-              JSON.parse(page.source).should have(Settings.pagination.per).items
-            end
-          end
-        end
-      end
-    end
+    it_behaves_like 'paginable'
   end
 
-  # ---------------------
-  # GET /locations/:id
-  # ---------------------
+  context 'GET /locations/:id' do
 
-  context ".show" do
+    let!(:resource)  { FactoryGirl.create(:floor, :with_ancestors, :with_descendants, :with_devices, resource_owner_id: user.id) }
+    let!(:not_owned) { FactoryGirl.create(:floor) }
+    let(:uri)        { "/locations/#{resource.id}" }
 
-    let!(:resource) do
-      LocationDecorator.decorate FactoryGirl.create(:floor, :with_ancestors, :with_descendants, :with_devices)
+    it 'view the owned resource' do
+      page.driver.get uri
+      page.status_code.should == 200
+      has_location resource
     end
 
-    let!(:resource_not_owned) do
-      FactoryGirl.create(:location_not_owned)
+    it 'creates the resource connections' do
+      resource.the_parent.should_not == nil
+      resource.ancestors.should      have(2).itmes
+      resource.children.should       have(1).item
+      resource.descendants.should    have(2).items
     end
 
-    let(:uri) do
-      "/locations/#{resource.id}"
-    end
-
-    it_should_behave_like "not authorized resource", "visit(uri)"
-
-    context "when logged in" do
-
-      before do
-        basic_auth
-      end
-
-      it "view the owned resource" do
-        visit uri
-        page.status_code.should == 200
-        should_have_location resource
-      end
-
-      context "when checking connection" do
-
-        before do
-          visit uri
-        end
-
-        context "parent" do
-
-          let(:parent) do
-            LocationDecorator.decorate resource.the_parent
-          end
-
-          it "has parent" do
-            page.should have_content(parent.uri)
-          end
-        end
-
-        context "ancestors" do
-
-          let(:ancestor) do
-            LocationDecorator.decorate resource.ancestors.first
-          end
-
-          it "has ancestors" do
-            page.should have_content(ancestor.uri)
-          end
-        end
-
-        context "children" do
-
-          let(:children) do
-            LocationDecorator.decorate resource.children.first
-          end
-
-          it "has child" do
-            page.should have_content(children.uri)
-          end
-        end
-
-        context "descendants" do
-
-          let(:descendants) do
-            LocationDecorator.decorate resource.descendants.last
-          end
-
-          it "has descendants" do
-            page.should have_content(descendants.uri)
-          end
-        end
-
-        context "children devices" do
-
-          it "has children devices" do
-            page.should have_content(resource.devices[0][:uri])
-          end
-        end
-
-        context "descendants devices" do
-
-          it "has descendants devices" do
-            page.should have_content(resource.descendants.last.devices[0][:uri])
-          end
-        end
-      end
-
-      it "exposes the location URI" do
-        visit uri
-        uri = "http://www.example.com/locations/#{resource.id}"
-        resource.uri.should == uri
-      end
-
-      context "with host" do
-
-        it "changes the URI" do
-          visit "#{uri}?host=www.lelylan.com"
-          resource.uri.should match("http://www.lelylan.com/")
-        end
-      end
-    end
+    it_behaves_like 'changeable host'
+    it_behaves_like 'not found resource', 'page.driver.get(uri)'
   end
 
+  context 'POST /locations' do
 
+    let!(:uri) { '/locations' }
+    before     { page.driver.get uri } # let us use the decorators before calling the POST method
 
-  # ---------------
-  # POST /locations
-  # ---------------
-  context ".create" do
+    let(:parent) { FactoryGirl.create(:house, resource_owner_id: user.id) }
+    let(:child)  { FactoryGirl.create(:room, resource_owner_id: user.id) }
+    let(:device) { FactoryGirl.create(:device, resource_owner_id: user.id) }
 
-    let(:uri) do
-      "/locations"
+    let(:params) {{
+      name:      'New floor',
+      type:      'floor',
+      parent:    LocationDecorator.decorate(parent).uri, 
+      locations: [ LocationDecorator.decorate(child).uri ],
+      devices:   [ DeviceDecorator.decorate(device).uri ]
+    }}
+
+    before         { page.driver.post uri, params.to_json }
+    let(:resource) { Location.last }
+
+    it 'creates the resource' do
+      page.driver.post uri, params.to_json
+      resource = Location.last
+      page.status_code.should == 201
+      has_location resource
     end
 
-    it_should_behave_like "not authorized resource", "page.driver.post(uri)"
-
-    context "when logged in" do
-
-      before do
-        basic_auth
-      end
-
-      let!(:floor) do
-        LocationDecorator.decorate FactoryGirl.create(:floor, :with_ancestors, :with_descendants)
-      end
-
-      let(:params) do
-        { 
-          name: 'Magic floor',
-          type: 'floor',
-          parent: LocationDecorator.decorate(floor.the_parent).uri, 
-          locations: [
-            LocationDecorator.decorate(floor.children.first).uri,
-          ],
-          devices: [
-            Settings.device.uri,
-            Settings.device.another.uri
-          ]
-        }
-      end
-
-      it "creates the resource" do
-        page.driver.post uri, params.to_json
-        resource = Location.last
-        page.status_code.should == 201
-        should_have_location resource
-      end
-
-      it "creates the resource connections" do
-        page.driver.post uri, params.to_json
-        resource = Location.last
-        resource.the_parent.should_not == nil
-        resource.ancestors.should have(2).itmes
-        resource.children.should have(1).item
-        resource.descendants.should have(2).items
-      end
-
-      it "stores the resource" do
-        expect{ page.driver.post(uri, params.to_json) }.to change{ Location.count }.by(1)
-      end
-
-      it_validates "not valid params", "page.driver.post(uri, params.to_json)", { method: "POST", error: "Name can't be blank" }
-      it_validates "not valid JSON", "page.driver.post(uri, params.to_json)", { method: "POST" }
+    it 'creates the resource connections' do
+      resource.the_parent.should_not == nil
+      resource.ancestors.should      have(1).itmes
+      resource.children.should       have(1).item
+      resource.descendants.should    have(1).items
     end
+
+    it 'stores the resource' do
+      expect { page.driver.post(uri, params.to_json) }.to change { Location.count }.by(1)
+    end
+
+    it_behaves_like 'check valid params', 'page.driver.post(uri, {}.to_json)', { method: 'POST', error: "Name can't be blank" }
+    it_behaves_like 'not valid json input', 'page.driver.post(uri, params.to_json)', { method: 'POST' }
   end
 
+  context 'PUT /locations/:id' do
 
+    before { page.driver.get '/locations' } # let us use the decorators before calling the POST method
 
-  # ---------------------
-  # PUT /locations/:id
-  # ---------------------
-  context ".update" do
+    let!(:resource)  { FactoryGirl.create :floor, :with_parent, :with_children, resource_owner_id: user.id }
+    let!(:new_house) { FactoryGirl.create :house, name: 'New house', resource_owner_id: user.id }
+    let!(:new_room)  { FactoryGirl.create :room, name: 'New Room', resource_owner_id: user.id }
+    let!(:not_owned) { FactoryGirl.create(:floor) }
 
-    let(:new_house) do
-      LocationDecorator.decorate FactoryGirl.create(:house, name: "New house")
+    let(:uri) { "/locations/#{resource.id}" }
+
+    let(:params) {{
+      name:      'New floor', 
+      parent:    LocationDecorator.decorate(new_house).uri, 
+      locations: [LocationDecorator.decorate(new_room).uri] 
+    }}
+
+    before { page.driver.put uri, params.to_json }
+    before { resource.reload }
+
+    it 'updates the resource' do
+      page.status_code.should == 200
+      page.should have_content 'New'
+      has_location resource
     end
 
-    let(:new_room) do
-      LocationDecorator.decorate FactoryGirl.create(:room, name: "New Room")
+    it 'updates the resource connections' do
+      resource.the_parent.should     == new_house.reload
+      resource.children.first.should == new_room.reload
     end
 
-    let(:resource) do
-      FactoryGirl.create :floor, :with_parent, :with_children
-    end
-
-    let(:old_house) do
-      resource.the_parent
-    end
-
-    let(:old_room) do
-      resource.children.first
-    end
-
-    let(:resource_not_owned) do
-      FactoryGirl.create :location_not_owned
-    end
-
-    let(:uri) do
-      "/locations/#{resource.id}"
-    end
-
-    it_should_behave_like "not authorized resource", "page.driver.put(uri)"
-
-    context "when logged in" do
-
-      before do
-        basic_auth
-      end
-
-      let(:params) do
-        {
-          name: "New floor", 
-          parent: "#{host}/locations/#{new_house.id}", 
-          locations: ["#{host}/locations/#{new_room.id}"] 
-        }
-      end
-
-      context "when updating" do
-
-        before do
-          page.driver.put uri, params.to_json
-          resource.reload
-        end
-
-        it "shows the updated resource" do
-          page.status_code.should == 200
-          page.should have_content "New"
-          should_have_location resource
-        end
-
-        it "updates parent" do
-          resource.the_parent.should == new_house.reload
-        end
-
-        it "updates children" do
-          resource.children.first.should == new_room.reload
-        end
-      end
-
-      it_should_behave_like "a rescued 404 resource", "page.driver.put(uri)", "locations"
-      it_validates "not valid JSON", "page.driver.put(uri, params.to_json)", { method: "PUT" }
-    end
+    it_behaves_like 'not found resource', 'page.driver.put(uri)'
+    it_behaves_like 'check valid params', 'page.driver.put(uri, {name: ""}.to_json)', { method: 'PUT', error: "Name can't be blank" }
+    it_behaves_like 'not valid json input', 'page.driver.put(uri, params.to_json)', { method: 'PUT' }
   end
 
+  context 'DELETE /locations/:id' do
+    let!(:resource)  { FactoryGirl.create :floor, :with_ancestors, :with_descendants, resource_owner_id: user.id }
+    let!(:not_owned) { FactoryGirl.create(:floor) }
+    let(:uri)        { "/locations/#{resource.id}" }
 
-
-  # ------------------------
-  # DELETE /locations/:id
-  # ------------------------
-  context ".destroy" do
-
-    let!(:resource) do
-      FactoryGirl.create(:floor, :with_ancestors, :with_descendants)
+    it 'deletes resource' do
+      expect { page.driver.delete(uri) }.to change{ Location.count }.by(-1)
+      page.status_code.should == 200
+      has_location resource
     end
 
-    let(:uri) do
-      "/locations/#{resource.id}"
-    end
-
-    let(:resource_not_owned) do
-      FactoryGirl.create(:location_not_owned)
-    end
-
-    it_should_behave_like "not authorized resource", "page.driver.delete(uri)"
-
-    context "when logged in" do
-
-      before do
-        basic_auth
-      end
-
-      scenario "delete resource" do
-        expect{ page.driver.delete(uri) }.to change{ Location.count }.by(-1)
-        page.status_code.should == 200
-        should_have_location resource
-      end
-
-      it_should_behave_like "a rescued 404 resource", "page.driver.delete(uri)", "locations"
-    end
+    it_behaves_like 'not found resource',   'page.driver.delete(uri)'
   end
 end
