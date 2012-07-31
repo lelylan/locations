@@ -18,9 +18,13 @@ class Location < ActiveRecord::Base
   validates :locations, uri: true, owned: true
   validates :devices, uri: true, owned: true
 
-  before_update :move_children_to_root
   before_save   :set_device_ids
+  before_update :move_children_to_root
   after_save    :find_parent, :find_children
+
+  def resource_owner_id=(resource_owner_id)
+    write_attribute(:resource_owner_id, resource_owner_id.to_s)
+  end
 
   def children_devices
     children.map(&:devices).flatten

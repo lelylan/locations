@@ -6,13 +6,13 @@ feature 'DescendantsController' do
 
   let!(:application)  { FactoryGirl.create :application }
   let!(:user)         { FactoryGirl.create :user }
-  let!(:access_token) { FactoryGirl.create :access_token, application: application, scopes: 'write', resource_owner_id: user.id.to_s }
+  let!(:access_token) { FactoryGirl.create :access_token, application: application, scopes: 'write', resource_owner_id: user.id }
 
   before { page.driver.header 'Authorization', "Bearer #{access_token.token}" }
 
   context 'GET /locations/:id/descendants' do
 
-    let!(:resource)  { FactoryGirl.create(:floor, :with_ancestors, :with_descendants, :with_devices, resource_owner_id: user.id.to_s) }
+    let!(:resource)  { FactoryGirl.create(:floor, :with_ancestors, :with_descendants, :with_devices, resource_owner_id: user.id) }
     let!(:not_owned) { FactoryGirl.create(:floor) }
     let(:uri)        { "/locations/#{resource.id}/descendants" }
 

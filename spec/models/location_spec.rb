@@ -22,8 +22,8 @@ describe Location do
 
     context 'with owned parent' do
 
-      let!(:parent)  { FactoryGirl.create :location, resource_owner_id: user.id.to_s }
-      let(:resource) { FactoryGirl.create :location, parent: a_uri(parent), resource_owner_id: user.id.to_s }
+      let!(:parent)  { FactoryGirl.create :location, resource_owner_id: user.id }
+      let(:resource) { FactoryGirl.create :location, parent: a_uri(parent), resource_owner_id: user.id }
 
       it 'connects the parent' do
         resource.the_parent.should == parent
@@ -33,7 +33,7 @@ describe Location do
     context 'with not owned parent' do
 
       let!(:parent)     { FactoryGirl.create :location }
-      let(:resource)    { FactoryGirl.create :location, parent: a_uri(parent), resource_owner_id: user.id.to_s }
+      let(:resource)    { FactoryGirl.create :location, parent: a_uri(parent), resource_owner_id: user.id }
 
       it 'raises a validation error' do
         expect { resource }.to raise_error(ActiveRecord::RecordInvalid)
@@ -45,8 +45,8 @@ describe Location do
 
     context 'with owned location' do
 
-      let!(:child)   { FactoryGirl.create :location, resource_owner_id: user.id.to_s }
-      let(:resource) { FactoryGirl.create :location, locations: [ a_uri(child) ], resource_owner_id: user.id.to_s }
+      let!(:child)   { FactoryGirl.create :location, resource_owner_id: user.id }
+      let(:resource) { FactoryGirl.create :location, locations: [ a_uri(child) ], resource_owner_id: user.id }
 
       it 'connects the locations' do
         resource.children.should have(1).item
@@ -56,7 +56,7 @@ describe Location do
     context 'with not owned location' do
 
       let!(:child)   { FactoryGirl.create :location }
-      let(:resource) { FactoryGirl.create :location, locations: [ a_uri(child) ], resource_owner_id: user.id.to_s }
+      let(:resource) { FactoryGirl.create :location, locations: [ a_uri(child) ], resource_owner_id: user.id }
 
       it 'raises a validation error' do
         expect { resource }.to raise_error(ActiveRecord::RecordInvalid)
@@ -65,10 +65,10 @@ describe Location do
 
     context 'with one owned location and one not owned location' do
 
-      let!(:owned_child)     { FactoryGirl.create :location, resource_owner_id: user.id.to_s }
+      let!(:owned_child)     { FactoryGirl.create :location, resource_owner_id: user.id }
       let!(:not_owned_child) { FactoryGirl.create :location }
       let!(:children)        { [ a_uri(owned_child), a_uri(not_owned_child) ] }
-      let(:resource)         { FactoryGirl.create :location, locations: children, resource_owner_id: user.id.to_s }
+      let(:resource)         { FactoryGirl.create :location, locations: children, resource_owner_id: user.id }
 
       it 'raises a validation error' do
         expect { resource }.to raise_error(ActiveRecord::RecordInvalid)
@@ -77,8 +77,8 @@ describe Location do
 
     context 'with not valid uri' do
 
-      let!(:owned_child)     { FactoryGirl.create :location, resource_owner_id: user.id.to_s }
-      let(:resource)         { FactoryGirl.create :location, locations: [ 'not-valid' ], resource_owner_id: user.id.to_s }
+      let!(:owned_child)     { FactoryGirl.create :location, resource_owner_id: user.id }
+      let(:resource)         { FactoryGirl.create :location, locations: [ 'not-valid' ], resource_owner_id: user.id }
 
       it 'raises a validation error' do
         expect { resource }.to raise_error(ActiveRecord::RecordInvalid)
@@ -90,9 +90,9 @@ describe Location do
 
     context 'with owned locations' do
 
-      let!(:resource)  { FactoryGirl.create :location, :with_descendants, resource_owner_id: user.id.to_s }
+      let!(:resource)  { FactoryGirl.create :location, :with_descendants, resource_owner_id: user.id }
       let!(:old_child) { resource.children.first }
-      let!(:child)     { FactoryGirl.create :location, resource_owner_id: user.id.to_s }
+      let!(:child)     { FactoryGirl.create :location, resource_owner_id: user.id }
 
       before { resource.update_attributes!(locations: [ a_uri(child) ]) }
 
@@ -111,7 +111,7 @@ describe Location do
 
     context 'with not owned locations' do
 
-      let!(:resource)  { FactoryGirl.create :location, :with_descendants, resource_owner_id: user.id.to_s }
+      let!(:resource)  { FactoryGirl.create :location, :with_descendants, resource_owner_id: user.id }
       let!(:old_child) { resource.children.first }
       let!(:child)     { FactoryGirl.create :location }
       let(:update)     { resource.update_attributes!(locations: [ a_uri(child) ]) }
@@ -128,7 +128,7 @@ describe Location do
 
     context 'with empty locations' do
 
-      let!(:resource)  { FactoryGirl.create :location, :with_descendants, resource_owner_id: user.id.to_s }
+      let!(:resource)  { FactoryGirl.create :location, :with_descendants, resource_owner_id: user.id }
       let!(:old_child) { resource.children.first }
 
       before { resource.update_attributes!(locations: []) }
@@ -144,7 +144,7 @@ describe Location do
 
     context 'with no locations' do
 
-      let!(:resource)  { FactoryGirl.create :location, :with_descendants, resource_owner_id: user.id.to_s }
+      let!(:resource)  { FactoryGirl.create :location, :with_descendants, resource_owner_id: user.id }
       let!(:old_child) { resource.children.first }
 
       before { resource.update_attributes!(name: 'Update') }
@@ -185,13 +185,13 @@ describe Location do
     context 'with owned device' do
 
       let!(:device)    { FactoryGirl.create :device, resource_owner_id: user.id }
-      let!(:location)  { FactoryGirl.create :floor, :with_descendants, devices: [ a_uri(device) ], resource_owner_id: user.id.to_s }
+      let!(:location)  { FactoryGirl.create :floor, :with_descendants, devices: [ a_uri(device) ], resource_owner_id: user.id }
 
       it 'connects the device' do
         location.devices.first.should == device.id.to_s
       end
 
-      it 'stores the device id as a String' do
+      it 'stores the device id as String' do
         location.devices.first.class.should == String
       end
 
@@ -223,7 +223,7 @@ describe Location do
     context 'with not owned device' do
 
       let!(:device)  { FactoryGirl.create :device }
-      let(:resource) { FactoryGirl.create :floor, :with_descendants, devices: [ a_uri(device) ], resource_owner_id: user.id.to_s }
+      let(:resource) { FactoryGirl.create :floor, :with_descendants, devices: [ a_uri(device) ], resource_owner_id: user.id }
 
       it 'raises a validation error' do
         expect { resource }.to raise_error(ActiveRecord::RecordInvalid)
@@ -233,7 +233,7 @@ describe Location do
     context 'when updates connected devices' do
 
       let!(:old_device) { FactoryGirl.create :device, resource_owner_id: user.id }
-      let!(:location)   { FactoryGirl.create :floor, :with_descendants, devices: [ a_uri(old_device) ], resource_owner_id: user.id.to_s }
+      let!(:location)   { FactoryGirl.create :floor, :with_descendants, devices: [ a_uri(old_device) ], resource_owner_id: user.id }
       let!(:device)     { FactoryGirl.create :device, resource_owner_id: user.id }
 
       before { location.update_attributes!(devices: [ a_uri(device) ]) }
@@ -241,6 +241,11 @@ describe Location do
       it 'connects the new device' do
         location.devices.should == [ device.id.to_s ]
       end
+    end
+  end
+
+  context 'when create a zone' do
+    it 'does not change the tree structure' do
     end
   end
 end

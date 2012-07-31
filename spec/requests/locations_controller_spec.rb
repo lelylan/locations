@@ -6,13 +6,13 @@ feature 'LocationsController' do
 
   let!(:application)  { FactoryGirl.create :application }
   let!(:user)         { FactoryGirl.create :user }
-  let!(:access_token) { FactoryGirl.create :access_token, application: application, scopes: 'write', resource_owner_id: user.id.to_s }
+  let!(:access_token) { FactoryGirl.create :access_token, application: application, scopes: 'write', resource_owner_id: user.id }
 
   before { page.driver.header 'Authorization', "Bearer #{access_token.token}" }
 
   describe 'GET /locations' do
 
-    let!(:resource)  { FactoryGirl.create :root, resource_owner_id: user.id.to_s }
+    let!(:resource)  { FactoryGirl.create :root, resource_owner_id: user.id }
     let!(:not_owned) { FactoryGirl.create :root }
     let(:uri)        { '/locations' }
 
@@ -29,7 +29,7 @@ feature 'LocationsController' do
 
   context 'GET /locations/:id' do
 
-    let!(:resource)  { FactoryGirl.create(:floor, :with_ancestors, :with_descendants, :with_devices, resource_owner_id: user.id.to_s) }
+    let!(:resource)  { FactoryGirl.create(:floor, :with_ancestors, :with_descendants, :with_devices, resource_owner_id: user.id) }
     let!(:not_owned) { FactoryGirl.create(:floor) }
     let(:uri)        { "/locations/#{resource.id}" }
 
@@ -55,8 +55,8 @@ feature 'LocationsController' do
     let!(:uri) { '/locations' }
     before     { page.driver.get uri } # let us use the decorators before calling the POST method
 
-    let(:parent) { FactoryGirl.create(:house, resource_owner_id: user.id.to_s) }
-    let(:child)  { FactoryGirl.create(:room, resource_owner_id: user.id.to_s) }
+    let(:parent) { FactoryGirl.create(:house, resource_owner_id: user.id) }
+    let(:child)  { FactoryGirl.create(:room, resource_owner_id: user.id) }
     let(:device) { FactoryGirl.create(:device, resource_owner_id: user.id) }
 
     let(:params) {{
@@ -96,9 +96,9 @@ feature 'LocationsController' do
 
     before { page.driver.get '/locations' } # let us use the decorators before calling the POST method
 
-    let!(:resource)  { FactoryGirl.create :floor, :with_parent, :with_children, resource_owner_id: user.id.to_s }
-    let!(:new_house) { FactoryGirl.create :house, name: 'New house', resource_owner_id: user.id.to_s }
-    let!(:new_room)  { FactoryGirl.create :room, name: 'New Room', resource_owner_id: user.id.to_s }
+    let!(:resource)  { FactoryGirl.create :floor, :with_parent, :with_children, resource_owner_id: user.id }
+    let!(:new_house) { FactoryGirl.create :house, name: 'New house', resource_owner_id: user.id }
+    let!(:new_room)  { FactoryGirl.create :room, name: 'New Room', resource_owner_id: user.id }
     let!(:not_owned) { FactoryGirl.create(:floor) }
 
     let(:uri) { "/locations/#{resource.id}" }
@@ -129,7 +129,7 @@ feature 'LocationsController' do
   end
 
   context 'DELETE /locations/:id' do
-    let!(:resource)  { FactoryGirl.create :floor, :with_ancestors, :with_descendants, resource_owner_id: user.id.to_s }
+    let!(:resource)  { FactoryGirl.create :floor, :with_ancestors, :with_descendants, resource_owner_id: user.id }
     let!(:not_owned) { FactoryGirl.create(:floor) }
     let(:uri)        { "/locations/#{resource.id}" }
 

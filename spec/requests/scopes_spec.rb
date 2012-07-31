@@ -6,12 +6,12 @@ feature 'Scope' do
 
   let!(:application) { FactoryGirl.create :application }
   let!(:user)        { FactoryGirl.create :user }
-  let!(:resource)    { FactoryGirl.create :root, resource_owner_id: user.id.to_s }
+  let!(:resource)    { FactoryGirl.create :root, resource_owner_id: user.id }
 
   describe ':read' do
 
     let!(:scopes)       { 'read' }
-    let!(:access_token) { FactoryGirl.create :access_token, application: application, scopes: scopes, resource_owner_id: user.id.to_s }
+    let!(:access_token) { FactoryGirl.create :access_token, application: application, scopes: scopes, resource_owner_id: user.id }
 
     before { page.driver.header 'Authorization', "Bearer #{access_token.token}" }
 
@@ -49,7 +49,7 @@ feature 'Scope' do
   describe ':write' do
 
     let!(:scopes)       { 'write' }
-    let!(:access_token) { FactoryGirl.create :access_token, application: application, scopes: scopes, resource_owner_id: user.id.to_s }
+    let!(:access_token) { FactoryGirl.create :access_token, application: application, scopes: scopes, resource_owner_id: user.id }
 
     before { page.driver.header 'Authorization', "Bearer #{access_token.token}" }
 
