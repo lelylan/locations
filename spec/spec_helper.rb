@@ -10,6 +10,10 @@ Spork.prefork do
   Spork.trap_method(Rails::Application::RoutesReloader, :reload!)
   Spork.trap_method(Rails::Application, :eager_load!)
 
+  # Draper preload of models
+  require 'draper'
+  Spork.trap_class_method(Draper::System, :load_app_local_decorators)
+
   # Load railties
   require File.expand_path('../../config/environment', __FILE__)
   Rails.application.railties.all { |r| r.eager_load! }
@@ -21,6 +25,7 @@ Spork.prefork do
   require 'draper/rspec_integration'
   require 'database_cleaner'
 
+  # RSpec configuration
   RSpec.configure do |config|
     config.mock_with :rspec
 
