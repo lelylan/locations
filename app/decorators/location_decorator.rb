@@ -33,7 +33,7 @@ class LocationDecorator < ApplicationDecorator
   def format_location(location)
     { 
       uri: LocationDecorator.decorate(location).uri,
-      id: location.id,
+      id: location.id.to_s,
       name: location.name
     }
   end
@@ -41,7 +41,7 @@ class LocationDecorator < ApplicationDecorator
   def format_device(device)
     { 
       uri: DeviceDecorator.decorate(device).uri,
-      id: device.id,
+      id: device.id.to_s,
       name: device.name
     }
   end

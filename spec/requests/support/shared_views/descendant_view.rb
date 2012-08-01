@@ -9,7 +9,7 @@ module DescendantsViewMethods
       descendant_json = Hashie::Mash.new(json[i])
       descendant_json.uri.should  == descendant.uri
       descendant_json.name.should == descendant.name
-      descendant_json.id.should   == descendant.id
+      descendant_json.id.should   == descendant.id.to_s
 
       has_descendant_parent(descendant.the_parent, descendant_json.parent)
       has_descendant_devices(descendant.devices, descendant_json.devices)
@@ -20,7 +20,7 @@ module DescendantsViewMethods
     parent = LocationDecorator.decorate parent
     parent_json.uri.should  == parent.uri
     parent_json.name.should == parent.name
-    parent_json.id.should   == parent.id
+    parent_json.id.should   == parent.id.to_s
   end
 
   def has_descendant_devices(devices, devices_json)

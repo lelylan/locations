@@ -37,7 +37,7 @@ module LocationsViewMethods
       parent = LocationDecorator.decorate(location.the_parent)
       json.parent.uri.should  == parent.uri
       json.parent.name.should == parent.name
-      json.parent.id.should   == parent.id
+      json.parent.id.should   == parent.id.to_s
     else
       json.parent.should == nil
     end
@@ -48,7 +48,7 @@ module LocationsViewMethods
     json.ancestors.each_with_index do |json_ancestor, i|
       json_ancestor.uri.should  == ancestors[i].uri
       json_ancestor.name.should == ancestors[i].name
-      json_ancestor.id.should   == ancestors[i].id
+      json_ancestor.id.should   == ancestors[i].id.to_s
     end
   end
 
@@ -57,7 +57,7 @@ module LocationsViewMethods
     json.locations.each_with_index do |json_child, i|
       json_child.uri.should  == locations[i].uri
       json_child.name.should == locations[i].name
-      json_child.id.should   == locations[i].id
+      json_child.id.should   == locations[i].id.to_s
     end
   end
 
@@ -66,7 +66,7 @@ module LocationsViewMethods
     json.locations.each_with_index do |json_child, i|
       json_child.uri.should  == devices[i].uri
       json_child.name.should == devices[i].name
-      json_child.id.should   == devices[i].id
+      json_child.id.should   == devices[i].id.to_s
     end
   end
 

@@ -33,17 +33,19 @@ feature 'LocationsController' do
     let!(:not_owned) { FactoryGirl.create(:floor) }
     let(:uri)        { "/locations/#{resource.id}" }
 
+    before { page.driver.get uri }
+
     it 'view the owned resource' do
-      page.driver.get uri
       page.status_code.should == 200
       has_location resource
     end
 
     it 'creates the resource connections' do
-      resource.the_parent.should_not == nil
-      resource.ancestors.should      have(2).itmes
-      resource.children.should       have(1).item
-      resource.descendants.should    have(2).items
+      json = Hashie::Mash.new JSON.parse(page.source)
+      json.parent.should_not == nil
+      json.ancestors.should have(2).itmes
+      json.locations.should have(1).item
+      json.devices.should   have(1).items
     end
 
     it_behaves_like 'changeable host'
