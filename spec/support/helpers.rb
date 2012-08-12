@@ -24,7 +24,6 @@ def a_delete(path)
   a_request(:delete, authenticated(path))
 end
 
-
 # Stubs
 def stub_get(path, auth=true)
   path = authenticated(path) if auth
@@ -48,7 +47,7 @@ end
 
 # Fixtures
 def fixtures_path
-  File.expand_path("../../fixtures", __FILE__)
+  File.expand_path('../../fixtures', __FILE__)
 end
 
 def fixture(file)

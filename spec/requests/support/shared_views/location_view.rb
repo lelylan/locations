@@ -24,6 +24,8 @@ module LocationsViewMethods
     json.id.should   == location.id.to_s
     json.name.should == location.name
     json.type.should == location.type
+    json.created_at.should_not be_nil
+    json.updated_at.should_not be_nil
 
     if not Location.where(id: location.id).count == 0 # avoid problems when resource is deleted
       has_parent json, location

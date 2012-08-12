@@ -12,6 +12,7 @@ class Location < ActiveRecord::Base
   attr_accessor   :parent, :locations
   attr_accessible :name, :devices, :parent, :locations, :type
 
+  validates :resource_owner_id, presence: true
   validates :name, presence: true
   validates :type, presence: true, inclusion: { in: Settings.locations.types }
   validates :parent, uri: { allow_nil: true }, owned: true

@@ -37,12 +37,10 @@ Spork.prefork do
   end
 end
 
-
 # This code runs each time you run your specs.
 Spork.each_run do
   FactoryGirl.reload
   I18n.backend.reload!
   Dir[Rails.root.join('spec/support/**/*.rb')].each           {|f| require f}
   Dir[Rails.root.join('spec/requests/support/**/*.rb')].each  {|f| require f}
-  Dir[Rails.root.join('spec/requests/concerns/**/*.rb')].each {|f| require f}
 end

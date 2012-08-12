@@ -13,7 +13,7 @@ gem 'rails_config'
 gem 'rabl'
 gem 'draper'
 gem 'addressable'
-gem 'bcrypt-ruby', :require => "bcrypt"
+gem 'bcrypt-ruby', require: 'bcrypt'
 gem 'httparty'
 
 group :development, :test do

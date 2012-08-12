@@ -4,4 +4,4 @@
 
 require File.expand_path('../config/application', __FILE__)
 
-LelylanLocation::Application.load_tasks
+Locations::Application.load_tasks

@@ -51,7 +51,7 @@ module ActiveModel
       # * <tt>:allow_blank</tt> - If set to true, skips this validation if the attribute is blank (default is +false+).
 
       def validates_uri(*attr_names)
-        validates_with UriValidator, _merge_attributes(attr_names)
+        validates_with OwnedValidator, _merge_attributes(attr_names)
       end
     end
   end

@@ -7,7 +7,7 @@ class LocationsController < ApplicationController
   before_filter :find_owned_resources
   before_filter :find_resource, only: %w(show update destroy)
   before_filter :search_params, only: %w(index)
-  before_filter :pagination, only: %w(index)
+  before_filter :pagination,    only: %w(index)
 
   def index
     @locations = @locations.limit(params[:per])

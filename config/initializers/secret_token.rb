@@ -4,4 +4,4 @@
 # If you change this key, all old signed cookies will become invalid!
 # Make sure the secret is at least 30 characters and all random,
 # no regular words or you'll be exposed to dictionary attacks.
-LelylanLocation::Application.config.secret_token = '31ddce9dfc42768de8f7c3e142b37a00b0f269e41aa028528e677b5c08c50152c25c928cb552e835dffc54e7ea778ce971556c2a44ba442456894401ff824a10'
+Locations::Application.config.secret_token = '31ddce9dfc42768de8f7c3e142b37a00b0f269e41aa028528e677b5c08c50152c25c928cb552e835dffc54e7ea778ce971556c2a44ba442456894401ff824a10'
