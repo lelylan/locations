@@ -2,96 +2,68 @@ require File.expand_path(File.dirname(__FILE__) + '/acceptance_helper')
 
 feature 'LocationsController' do
 
-  before { Location.delete_all }
-
   let!(:application)  { FactoryGirl.create :application }
   let!(:user)         { FactoryGirl.create :user }
   let!(:access_token) { FactoryGirl.create :access_token, application: application, scopes: 'write', resource_owner_id: user.id }
 
   before { page.driver.header 'Authorization', "Bearer #{access_token.token}" }
+  before { page.driver.header 'Content-Type', 'application/json' }
+
+  let(:controller) { 'locations' }
+  let(:factory)    { 'root' }
 
   describe 'GET /locations' do
 
-    let!(:resource)  { FactoryGirl.create :root, resource_owner_id: user.id }
-    let!(:not_owned) { FactoryGirl.create :root }
-    let(:uri)        { '/locations' }
+    let!(:resource) { FactoryGirl.create :root, resource_owner_id: user.id }
+    let(:uri)       { '/locations' }
 
-    it 'shows all owned resources' do
-      page.driver.get uri
-      page.status_code.should == 200
-      contains_owned_location resource
-    end
-
-    it_behaves_like 'searchable', { name: 'My name is resource', type: 'room' }
-
-    it_behaves_like 'paginable'
+    it_behaves_like 'a listable resource'
+    it_behaves_like 'a paginable resource'
+    it_behaves_like 'a searchable resource', { name: 'My name is resource', type: 'room' }
   end
 
   context 'GET /locations/:id' do
 
-    let!(:resource)  { FactoryGirl.create(:floor, :with_ancestors, :with_descendants, :with_devices, resource_owner_id: user.id) }
-    let!(:not_owned) { FactoryGirl.create(:floor) }
-    let(:uri)        { "/locations/#{resource.id}" }
+    let!(:resource) { FactoryGirl.create :root, resource_owner_id: user.id }
+    let(:uri)       { "/locations/#{resource.id}" }
 
-    before { page.driver.get uri }
-
-    it 'view the owned resource' do
-      page.status_code.should == 200
-      has_location resource
-    end
-
-    it 'creates the resource connections' do
-      json = Hashie::Mash.new JSON.parse(page.source)
-      json.parent.should_not == nil
-      json.ancestors.should have(2).itmes
-      json.locations.should have(1).item
-      json.devices.should   have(1).items
-    end
-
-    it_behaves_like 'changeable host'
-    it_behaves_like 'not found resource', 'page.driver.get(uri)'
+    it_behaves_like 'a showable resource'
+    it_behaves_like 'a changeable host'
+    it_behaves_like 'a not owned resource', 'page.driver.get(uri)'
+    it_behaves_like 'a not found resource', 'page.driver.get(uri)'
   end
 
   context 'POST /locations' do
 
-    let!(:uri) { '/locations' }
-    before     { page.driver.get uri } # let us use the decorators before calling the POST method
+    let(:uri) { '/locations' }
+    before    { page.driver.get uri } # let us use the decorators before calling the POST method
 
-    let(:parent) { FactoryGirl.create(:house, resource_owner_id: user.id) }
-    let(:child)  { FactoryGirl.create(:room, resource_owner_id: user.id) }
-    let(:device) { FactoryGirl.create(:device, resource_owner_id: user.id) }
+    let!(:parent) { FactoryGirl.create(:house, resource_owner_id: user.id) }
+    let!(:child)  { FactoryGirl.create(:room, resource_owner_id: user.id) }
+    let!(:device) { FactoryGirl.create(:device, resource_owner_id: user.id) }
 
-    let(:params) {{
-      name:      'New floor',
-      type:      'floor',
-      parent:    LocationDecorator.decorate(parent).uri, 
-      locations: [ LocationDecorator.decorate(child).uri ],
-      devices:   [ DeviceDecorator.decorate(device).uri ]
+    let(:params) {{ 
+      name:      'New floor', 
+      type:      'floor', 
+      parent:    a_uri(parent), 
+      locations: [ a_uri(child) ], 
+      devices:   [ a_uri(device) ] 
     }}
 
-    before         { page.driver.post uri, params.to_json }
-    let(:resource) { Location.last }
+    context 'when creates the connections' do
 
-    it 'creates the resource' do
-      page.driver.post uri, params.to_json
-      resource = Location.last
-      page.status_code.should == 201
-      has_location resource
+      before     { page.driver.post uri, params.to_json }
+      let(:json) { Hashie::Mash.new JSON.parse(page.source) }
+
+      it 'shows the connections' do
+        json.parent.should_not == nil
+        json.locations.should have(1).itmes
+        json.devices.should have(1).item
+      end
     end
 
-    it 'creates the resource connections' do
-      resource.the_parent.should_not == nil
-      resource.ancestors.should      have(1).itmes
-      resource.children.should       have(1).item
-      resource.descendants.should    have(1).items
-    end
-
-    it 'stores the resource' do
-      expect { page.driver.post(uri, params.to_json) }.to change { Location.count }.by(1)
-    end
-
-    it_behaves_like 'check valid params', 'page.driver.post(uri, {}.to_json)', { method: 'POST', error: "Name can't be blank" }
-    it_behaves_like 'not valid json input', 'page.driver.post(uri, params.to_json)', { method: 'POST' }
+    it_behaves_like 'a creatable resource'
+    it_behaves_like 'a validated resource', 'page.driver.post(uri, {}.to_json)', { method: 'POST', error: 'can\'t be blank' }
   end
 
   context 'PUT /locations/:id' do
@@ -106,41 +78,34 @@ feature 'LocationsController' do
     let(:uri) { "/locations/#{resource.id}" }
 
     let(:params) {{
-      name:      'New floor', 
+      name:      'updated', 
       parent:    LocationDecorator.decorate(new_house).uri, 
       locations: [LocationDecorator.decorate(new_room).uri] 
     }}
 
-    before { page.driver.put uri, params.to_json }
-    before { resource.reload }
+    context 'when updates the connections' do
 
-    it 'updates the resource' do
-      page.status_code.should == 200
-      page.should have_content 'New'
-      has_location resource
+      before { page.driver.put uri, params.to_json }
+      before { resource.reload }
+
+      it 'updates the resource connections' do
+        resource.the_parent.should     == new_house.reload
+        resource.children.first.should == new_room.reload
+      end
     end
 
-    it 'updates the resource connections' do
-      resource.the_parent.should     == new_house.reload
-      resource.children.first.should == new_room.reload
-    end
-
-    it_behaves_like 'not found resource', 'page.driver.put(uri)'
-    it_behaves_like 'check valid params', 'page.driver.put(uri, {name: ""}.to_json)', { method: 'PUT', error: "Name can't be blank" }
-    it_behaves_like 'not valid json input', 'page.driver.put(uri, params.to_json)', { method: 'PUT' }
+    it_behaves_like 'an updatable resource'
+    it_behaves_like 'a not owned resource', 'page.driver.put(uri)'
+    it_behaves_like 'a not found resource', 'page.driver.put(uri)'
+    it_behaves_like 'a validated resource', 'page.driver.put(uri, { name: "" }.to_json)', { method: 'PUT', error: 'can\'t be blank' }
   end
 
   context 'DELETE /locations/:id' do
-    let!(:resource)  { FactoryGirl.create :floor, :with_ancestors, :with_descendants, resource_owner_id: user.id }
-    let!(:not_owned) { FactoryGirl.create(:floor) }
+    let!(:resource)  { FactoryGirl.create :location, resource_owner_id: user.id }
     let(:uri)        { "/locations/#{resource.id}" }
 
-    it 'deletes resource' do
-      expect { page.driver.delete(uri) }.to change{ Location.count }.by(-1)
-      page.status_code.should == 200
-      has_location resource
-    end
-
-    it_behaves_like 'not found resource',   'page.driver.delete(uri)'
+    it_behaves_like 'a deletable resource'
+    it_behaves_like 'a not owned resource', 'page.driver.delete(uri)'
+    it_behaves_like 'a not found resource', 'page.driver.delete(uri)'
   end
 end

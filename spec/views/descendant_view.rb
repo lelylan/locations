@@ -1,9 +1,8 @@
-module DescendantsViewMethods
-  def has_descendants(location)
+module HelpersViewMethods
+  def has_descendants(location, json = nil)
     has_valid_json
-
     descendants = LocationDecorator.decorate location.descendants
-    json        = JSON.parse page.source
+    json = JSON.parse page.source
 
     descendants.each_with_index do |descendant, i|
       descendant_json = Hashie::Mash.new(json[i])
@@ -34,4 +33,4 @@ module DescendantsViewMethods
   end
 end
 
-RSpec.configuration.include DescendantsViewMethods
+RSpec.configuration.include HelpersViewMethods

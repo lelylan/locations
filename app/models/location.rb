@@ -1,5 +1,5 @@
 class Location < ActiveRecord::Base
-  include Lelylan::Search::URI
+  include Resourceable
 
   acts_as_nested_set
 
@@ -9,8 +9,8 @@ class Location < ActiveRecord::Base
 
   serialize :devices, Array
 
-  attr_accessor   :parent, :locations
-  attr_accessible :name, :devices, :parent, :locations, :type
+  attr_accessor  :parent, :locations
+  attr_protected :parent_id, :resource_owner_id, :lft, :rgt, :depth
 
   validates :resource_owner_id, presence: true
   validates :name, presence: true

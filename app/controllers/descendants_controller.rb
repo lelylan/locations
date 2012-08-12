@@ -1,6 +1,4 @@
 class DescendantsController < ApplicationController
-  include Lelylan::Search::URI
-
   doorkeeper_for :index, scopes: [:read, :write]
 
   before_filter :find_owned_resources

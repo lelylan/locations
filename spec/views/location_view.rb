@@ -1,25 +1,5 @@
-module LocationsViewMethods
-
-  def contains_owned_location(location)
-    location = LocationDecorator.decorate location
-    json     = JSON.parse page.source
-    contains_location location
-    has_not_not_owned_locations
-  end
-
-  def contains_location(location)
-    location = LocationDecorator.decorate location
-    json     = JSON.parse(page.source).first
-    has_location location, json
-  end
-
+module HelpersViewMethods
   def has_location(location, json = nil)
-    has_valid_json
-
-    location = LocationDecorator.decorate location
-    json     = JSON.parse page.source unless json 
-    json     = Hashie::Mash.new json
-
     json.uri.should  == location.uri
     json.id.should   == location.id.to_s
     json.name.should == location.name
@@ -71,14 +51,6 @@ module LocationsViewMethods
       json_child.id.should   == devices[i].id.to_s
     end
   end
-
-  def has_not_not_owned_locations
-    has_valid_json
-    json = JSON.parse(page.source)
-    json.should have(1).item
-    Location.all.should have(2).items
-  end
-
 end
 
-RSpec.configuration.include LocationsViewMethods
+RSpec.configuration.include HelpersViewMethods

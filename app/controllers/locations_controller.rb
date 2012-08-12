@@ -1,6 +1,4 @@
 class LocationsController < ApplicationController
-  include Lelylan::Search::URI
-
   doorkeeper_for :index, :show, scopes: [:read, :write]
   doorkeeper_for :create, :update, :destroy, scopes: [:write]
 
@@ -17,8 +15,8 @@ class LocationsController < ApplicationController
   end
 
   def create
-    body = JSON.parse(request.body.read)
-    @location = Location.new(body)
+    params.reject!{|k,v| %w(format action controller location).include? k }
+    @location = Location.new(params)
     @location.resource_owner_id = current_user.id
     if @location.save!
       render 'show', status: 201, location: LocationDecorator.decorate(@location).uri
@@ -28,8 +26,8 @@ class LocationsController < ApplicationController
   end
 
   def update
-    body = JSON.parse(request.body.read)
-    if @location.update_attributes!(body)
+    params.reject!{|k,v| %w(format action controller location).include? k }
+    if @location.update_attributes!(params)
       render 'show'
     else
       render_422 'notifications.resource.not_valid', @location.errors

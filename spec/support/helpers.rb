@@ -24,6 +24,7 @@ def a_delete(path)
   a_request(:delete, authenticated(path))
 end
 
+
 # Stubs
 def stub_get(path, auth=true)
   path = authenticated(path) if auth
@@ -45,20 +46,22 @@ def stub_delete(path, auth=true)
   stub_request(:delete, path).with(headers: mock_headers)
 end
 
+
 # Fixtures
-def fixtures_path
-  File.expand_path('../../fixtures', __FILE__)
+def fixture_path
+  File.expand_path("../../fixtures", __FILE__)
 end
 
 def fixture(file)
-  File.new(fixtures_path + '/' + file)
+  File.new(fixture_path + '/' + file)
 end
 
 def json_fixture(file)
   HashWithIndifferentAccess.new JSON.parse fixture(file).read
 end
 
+
 # URI generators
-def a_uri(resource)
-  "http://www.example.com/#{resource.class.to_s.pluralize.downcase}/#{resource.id}"
+def a_uri(resource, field = 'id')
+  "http://www.example.com/#{resource.class.to_s.pluralize.downcase}/#{resource.send(field)}"
 end
