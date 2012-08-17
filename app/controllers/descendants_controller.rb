@@ -1,5 +1,5 @@
 class DescendantsController < ApplicationController
-  doorkeeper_for :index, scopes: [:read, :write]
+  doorkeeper_for :index, scopes: %w(locations.read locations resources.read resources).map(&:to_sym)
 
   before_filter :find_owned_resources
   before_filter :find_resource

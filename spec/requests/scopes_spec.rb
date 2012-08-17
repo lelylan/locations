@@ -5,44 +5,42 @@ feature 'Scope' do
   let!(:application) { FactoryGirl.create :application }
   let!(:user)        { FactoryGirl.create :user }
 
-  context 'with read scope' do
+  %w(locations.read resources.read).each do |scope|
 
-    let!(:scopes)       { 'read' }
-    let!(:access_token) { FactoryGirl.create :access_token, scopes: scopes, resource_owner_id: user.id }
+    context "with token #{scope}" do
 
-    before { page.driver.header 'Authorization', "Bearer #{access_token.token}" }
+      let!(:access_token) { FactoryGirl.create :access_token, scopes: scope, resource_owner_id: user.id }
 
-    context 'locations controller' do
+      before { page.driver.header 'Authorization', "Bearer #{access_token.token}" }
 
-      let(:resource) { FactoryGirl.create :root, resource_owner_id: user.id }
+      let(:location) { FactoryGirl.create :root, resource_owner_id: user.id }
 
       it { should authorize 'get /locations' }
-      it { should authorize "get /locations/#{resource.id}" }
-      it { should authorize "get /locations/#{resource.id}/descendants" }
+      it { should authorize "get /locations/#{location.id}" }
+      it { should authorize "get /locations/#{location.id}/descendants" }
 
-      it { should_not authorize 'post /locations' }
-      it { should_not authorize "put /locations/#{resource.id}" }
-      it { should_not authorize "delete /locations/#{resource.id}" }
+      it { should_not authorize 'post   /locations' }
+      it { should_not authorize "put    /locations/#{location.id}" }
+      it { should_not authorize "delete /locations/#{location.id}" }
     end
   end
 
-  context 'with write scope' do
+  %w(locations resources).each do |scope|
 
-    let!(:scopes)       { 'write' }
-    let!(:access_token) { FactoryGirl.create :access_token, scopes: scopes, resource_owner_id: user.id }
+    context "with token #{scope}" do
 
-    before { page.driver.header 'Authorization', "Bearer #{access_token.token}" }
+      let!(:access_token) { FactoryGirl.create :access_token, scopes: scope, resource_owner_id: user.id }
 
-    context 'locations controller' do
+      before { page.driver.header 'Authorization', "Bearer #{access_token.token}" }
 
-      let(:resource) { FactoryGirl.create :root, resource_owner_id: user.id }
+      let(:location) { FactoryGirl.create :root, resource_owner_id: user.id }
 
-      it { should authorize 'get /locations' }
-      it { should authorize "get /locations/#{resource.id}" }
-      it { should authorize "get /locations/#{resource.id}/descendants" }
-      it { should authorize 'post /locations' }
-      it { should authorize "put /locations/#{resource.id}" }
-      it { should authorize "delete /locations/#{resource.id}" }
+      it { should authorize 'get    /locations' }
+      it { should authorize "get    /locations/#{location.id}" }
+      it { should authorize "get    /locations/#{location.id}/descendants" }
+      it { should authorize 'post   /locations' }
+      it { should authorize "put    /locations/#{location.id}" }
+      it { should authorize "delete /locations/#{location.id}" }
     end
   end
 end

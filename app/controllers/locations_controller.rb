@@ -1,6 +1,6 @@
 class LocationsController < ApplicationController
-  doorkeeper_for :index, :show, scopes: [:read, :write]
-  doorkeeper_for :create, :update, :destroy, scopes: [:write]
+  doorkeeper_for :index, :show, scopes: %w(locations.read locations resources.read resources).map(&:to_sym)
+  doorkeeper_for :create, :update, :destroy, scopes: %w(locations resources).map(&:to_sym)
 
   before_filter :find_owned_resources
   before_filter :find_resource, only: %w(show update destroy)
