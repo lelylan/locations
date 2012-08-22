@@ -7,7 +7,7 @@ class Location
   field :resource_owner_id, type: Moped::BSON::ObjectId
   field :name
   field :type
-  field :device_ids, type: Array
+  field :device_ids, type: Array, default: []
 
   attr_accessor  :into, :locations, :devices
   attr_protected :resource_owner_id, :location_ids, :device_ids

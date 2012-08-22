@@ -95,7 +95,7 @@ describe Location do
 
     context 'with owned locations' do
 
-      let!(:resource)  { FactoryGirl.create :location, :with_descendants, resource_owner_id: user.id }
+      let!(:resource)  { FactoryGirl.create :location, :with_children, resource_owner_id: user.id }
       let!(:old_child) { resource.children.first }
       let!(:child)     { FactoryGirl.create :location, resource_owner_id: user.id }
 
@@ -116,7 +116,7 @@ describe Location do
 
     context 'with not owned locations' do
 
-      let!(:resource)  { FactoryGirl.create :location, :with_descendants, resource_owner_id: user.id }
+      let!(:resource)  { FactoryGirl.create :location, :with_children, resource_owner_id: user.id }
       let!(:old_child) { resource.children.first }
       let!(:child)     { FactoryGirl.create :location }
       let(:update)     { resource.update_attributes!(locations: [ a_uri(child) ]) }
@@ -133,7 +133,7 @@ describe Location do
 
     context 'with empty locations' do
 
-      let!(:resource)  { FactoryGirl.create :location, :with_descendants, resource_owner_id: user.id }
+      let!(:resource)  { FactoryGirl.create :location, :with_children, resource_owner_id: user.id }
       let!(:old_child) { resource.children.first }
 
       before { resource.update_attributes!(locations: []) }
@@ -149,7 +149,7 @@ describe Location do
 
     context 'with no locations' do
 
-      let!(:resource)  { FactoryGirl.create :location, :with_descendants, resource_owner_id: user.id }
+      let!(:resource)  { FactoryGirl.create :location, :with_children, resource_owner_id: user.id }
       let!(:old_child) { resource.children.first }
 
       before { resource.update_attributes!(name: 'Update') }
@@ -186,7 +186,7 @@ describe Location do
     context 'with owned device' do
 
       let!(:device)    { FactoryGirl.create :device, resource_owner_id: user.id }
-      let!(:location)  { FactoryGirl.create :floor, :with_descendants, devices: [ a_uri(device) ], resource_owner_id: user.id }
+      let!(:location)  { FactoryGirl.create :floor, :with_children, devices: [ a_uri(device) ], resource_owner_id: user.id }
 
       it 'connects the device' do
         location.device_ids.first.should == device.id
@@ -198,8 +198,10 @@ describe Location do
 
       context 'with children devices' do
 
+        let!(:child)        { location.children.first }
         let!(:child_device) { FactoryGirl.create :device, resource_owner_id: user.id }
-        before { location.children.first.update_attributes!(devices: [ a_uri(child_device) ]) }
+
+        before { child.update_attributes!(devices: [ a_uri(child_device) ]) }
 
         it 'shows children devices' do
           location.children_devices.should == [ child_device.id ]
@@ -207,10 +209,10 @@ describe Location do
 
         context 'with descendant devices' do
 
-          let(:descendant_device)   { FactoryGirl.create :device, resource_owner_id: user.id }
-          let(:descendant_location) { location.descendants.last }
+          let(:descendant)        { FactoryGirl.create :room, name: 'Barbie room', parent_id: child.id, resource_owner_id: user.id }
+          let(:descendant_device) { FactoryGirl.create :device, resource_owner_id: user.id }
 
-          before { descendant_location.update_attributes(devices: [ a_uri(descendant_device) ]) }
+          before { descendant.update_attributes(devices: [ a_uri(descendant_device) ]) }
 
           it 'shows children devices' do
             location.descendants_devices.should == [ child_device.id, descendant_device.id ]
@@ -222,7 +224,7 @@ describe Location do
     context 'with not owned device' do
 
       let!(:device)  { FactoryGirl.create :device }
-      let(:resource) { FactoryGirl.create :floor, :with_descendants, devices: [ a_uri(device) ], resource_owner_id: user.id }
+      let(:resource) { FactoryGirl.create :floor, :with_children, devices: [ a_uri(device) ], resource_owner_id: user.id }
 
       it 'raises a validation error' do
         expect { resource }.to raise_error(Mongoid::Errors::Validations)
@@ -232,7 +234,7 @@ describe Location do
     context 'when updates connected devices' do
 
       let!(:old_device) { FactoryGirl.create :device, resource_owner_id: user.id }
-      let!(:location)   { FactoryGirl.create :floor, :with_descendants, devices: [ a_uri(old_device) ], resource_owner_id: user.id }
+      let!(:location)   { FactoryGirl.create :floor, :with_children, devices: [ a_uri(old_device) ], resource_owner_id: user.id }
       let!(:device)     { FactoryGirl.create :device, resource_owner_id: user.id }
 
       before { location.update_attributes!(devices: [ a_uri(device) ]) }

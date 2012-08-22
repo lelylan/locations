@@ -25,30 +25,10 @@ FactoryGirl.define do
     end
   end
 
-  trait :with_ancestors do
-    after(:create) do |floor|
-      house = FactoryGirl.create :house, resource_owner_id: floor.resource_owner_id
-      floor.update_attributes parent_id: house.id
-      #complex = FactoryGirl.create :house, name: 'Complex of houses', resource_owner_id: floor.resource_owner_id
-      #house.update_attributes parent_id: complex.id
-    end
-  end
-
   trait :with_children do
     after(:create) do |floor|
       room = FactoryGirl.create :room, resource_owner_id: floor.resource_owner_id
       room.update_attributes parent_id: floor.id
-    end
-  end
-
-  trait :with_descendants do
-    after(:create) do |floor|
-      room = FactoryGirl.create :room, resource_owner_id: floor.resource_owner_id
-      room.update_attributes parent_id: floor.id
-      mini = FactoryGirl.create :room, name: 'Bosone', resource_owner_id: floor.resource_owner_id
-      mini.update_attributes parent_id: room.id
-      pp floor.children.entries
-      pp floor.descendants.entries
     end
   end
 
@@ -61,7 +41,8 @@ FactoryGirl.define do
       floor.update_attributes devices: [ a_uri(device_floor) ]
 
       device_room = FactoryGirl.create :device, name: 'Light room', resource_owner_id: floor.resource_owner_id
-      floor.children.first.update_attributes devices: [ a_uri(device_room) ]
+      pp floor.children
+      #floor.children.first.update_attributes devices: [ a_uri(device_room) ]
     end
   end
 end

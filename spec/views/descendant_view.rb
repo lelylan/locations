@@ -11,7 +11,7 @@ module HelpersViewMethods
       descendant_json.id.should   == descendant.id.to_s
 
       has_descendant_parent(descendant.parent, descendant_json.parent)
-      has_descendant_devices(descendant.devices, descendant_json.devices)
+      has_descendant_devices(descendant.device_ids, descendant_json.devices)
     end
   end
 
@@ -22,8 +22,8 @@ module HelpersViewMethods
     parent_json.id.should   == parent.id.to_s
   end
 
-  def has_descendant_devices(devices, devices_json)
-    devices = Device.in(id: devices.map {|id| Moped::BSON::ObjectId(id)} )
+  def has_descendant_devices(device_ids, devices_json)
+    devices = Device.in(id: device_ids)
     devices = DeviceDecorator.decorate devices
     devices.each_with_index do |device, i|
       devices_json[i].uri.should  == device.uri
