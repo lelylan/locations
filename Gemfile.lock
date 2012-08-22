@@ -38,8 +38,6 @@ GEM
       multi_json (~> 1.0)
     addressable (2.3.2)
     arel (3.0.2)
-    awesome_nested_set (2.1.3)
-      activerecord (>= 3.0.0)
     awesome_print (1.0.2)
     bcrypt-ruby (3.0.1)
     builder (3.0.0)
@@ -126,6 +124,8 @@ GEM
       moped (~> 1.1)
       origin (~> 1.0)
       tzinfo (~> 0.3.22)
+    mongoid-ancestry (0.3.0)
+      mongoid (~> 3.0.3)
     moped (1.2.0)
     multi_json (1.3.6)
     nokogiri (1.5.5)
@@ -235,8 +235,8 @@ PLATFORMS
 
 DEPENDENCIES
   addressable
-  awesome_nested_set
   bcrypt-ruby
+  bundler
   capybara
   capybara-json
   coffee-rails (~> 3.2.1)
@@ -253,6 +253,7 @@ DEPENDENCIES
   hashie
   launchy
   mongoid (~> 3.0.0.rc)
+  mongoid-ancestry
   rabl
   rails (~> 3.2.6)
   rails_best_practices

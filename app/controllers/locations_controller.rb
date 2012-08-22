@@ -36,7 +36,7 @@ class LocationsController < ApplicationController
 
   def destroy
     render 'show'
-    @location.safe_destroy
+    @location.destroy
   end
 
   private
