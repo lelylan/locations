@@ -45,7 +45,7 @@ feature 'LocationsController' do
     let(:params) {{ 
       name:      'New floor', 
       type:      'floor', 
-      parent:    a_uri(parent), 
+      into:      a_uri(parent), 
       locations: [ a_uri(child) ], 
       devices:   [ a_uri(device) ] 
     }}
@@ -79,7 +79,7 @@ feature 'LocationsController' do
 
     let(:params) {{
       name:      'updated', 
-      parent:    LocationDecorator.decorate(new_house).uri, 
+      into:      LocationDecorator.decorate(new_house).uri, 
       locations: [LocationDecorator.decorate(new_room).uri] 
     }}
 
@@ -89,7 +89,7 @@ feature 'LocationsController' do
       before { resource.reload }
 
       it 'updates the resource connections' do
-        resource.the_parent.should     == new_house.reload
+        resource.parent.should     == new_house.reload
         resource.children.first.should == new_room.reload
       end
     end

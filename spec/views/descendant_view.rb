@@ -10,7 +10,7 @@ module HelpersViewMethods
       descendant_json.name.should == descendant.name
       descendant_json.id.should   == descendant.id.to_s
 
-      has_descendant_parent(descendant.the_parent, descendant_json.parent)
+      has_descendant_parent(descendant.parent, descendant_json.parent)
       has_descendant_devices(descendant.devices, descendant_json.devices)
     end
   end
