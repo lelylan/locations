@@ -29,8 +29,8 @@ FactoryGirl.define do
     after(:create) do |floor|
       house = FactoryGirl.create :house, resource_owner_id: floor.resource_owner_id
       floor.update_attributes parent_id: house.id
-      complex = FactoryGirl.create :house, name: 'Complex of houses', resource_owner_id: floor.resource_owner_id
-      house.update_attributes parent_id: complex.id
+      #complex = FactoryGirl.create :house, name: 'Complex of houses', resource_owner_id: floor.resource_owner_id
+      #house.update_attributes parent_id: complex.id
     end
   end
 
@@ -47,6 +47,8 @@ FactoryGirl.define do
       room.update_attributes parent_id: floor.id
       mini = FactoryGirl.create :room, name: 'Bosone', resource_owner_id: floor.resource_owner_id
       mini.update_attributes parent_id: room.id
+      pp floor.children.entries
+      pp floor.descendants.entries
     end
   end
 

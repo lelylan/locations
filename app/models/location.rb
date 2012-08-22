@@ -51,4 +51,3 @@ class Location
     children.each { |l| l.update_attributes(parent_id: nil) } if locations
   end
 end
-
