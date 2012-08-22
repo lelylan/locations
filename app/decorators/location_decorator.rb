@@ -6,7 +6,7 @@ class LocationDecorator < ApplicationDecorator
   end
 
   def parent_view
-    model.the_parent ? format_location(model.the_parent) : nil
+    model.parent ? format_location(model.parent) : nil
   end
 
   def ancestors_view
@@ -24,7 +24,7 @@ class LocationDecorator < ApplicationDecorator
   # TODO to improve making just one query (use something like identity map)
   # on descendants views as we make a query for every locations
   def devices_view
-    devices = Device.in(id: model.devices.map {|id| Moped::BSON::ObjectId(id)} )
+    devices = Device.in(id: model.device_ids )
     devices.map { |device| format_device(device) }
   end
 

@@ -15,8 +15,8 @@ module HelpersViewMethods
   end
 
   def has_parent(json, location)
-    if location.the_parent
-      parent = LocationDecorator.decorate(location.the_parent)
+    if location.parent
+      parent = LocationDecorator.decorate(location.parent)
       json.parent.uri.should  == parent.uri
       json.parent.name.should == parent.name
       json.parent.id.should   == parent.id.to_s

@@ -1,15 +1,18 @@
 source 'https://rubygems.org'
 
+ruby '1.9.3'
+
 gem 'rails', '~>3.2.6'
 gem 'mongoid', '~> 3.0.0.rc'
 gem 'doorkeeper', git: 'https://github.com/andreareginato/doorkeeper', branch: 'mongoid_v3'
-gem 'awesome_nested_set'
+gem 'mongoid-ancestry'
 gem 'rabl'
 gem 'draper'
 gem 'yajl-ruby'
 gem 'rails_config'
 gem 'addressable'
 gem 'bcrypt-ruby', require: 'bcrypt'
+gem 'bundler'
 
 group :development, :test do
   gem 'foreman'

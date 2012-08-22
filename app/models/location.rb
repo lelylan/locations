@@ -1,77 +1,53 @@
-class Location < ActiveRecord::Base
+class Location
+  include Mongoid::Document
+  include Mongoid::Timestamps
+  include Mongoid::Ancestry
   include Resourceable
 
-  acts_as_nested_set
+  field :resource_owner_id, type: Moped::BSON::ObjectId
+  field :name
+  field :type
+  field :device_ids, type: Array, default: []
 
-  alias_method :the_parent, :parent # use parent as attribute for the mass assignment
+  attr_accessor  :into, :locations, :devices
+  attr_protected :resource_owner_id, :location_ids, :device_ids
 
-  self.inheritance_column = :_type_disabled
-
-  serialize :devices, Array
-
-  attr_accessor  :parent, :locations
-  attr_protected :parent_id, :resource_owner_id, :lft, :rgt, :depth
+  has_ancestry orphan_strategy: :rootify
 
   validates :resource_owner_id, presence: true
   validates :name, presence: true
   validates :type, presence: true, inclusion: { in: Settings.locations.types }
-  validates :parent, uri: { allow_nil: true }, owned: true
+  validates :into,      uri: { allow_nil: true }, owned: true
   validates :locations, uri: true, owned: true
-  validates :devices, uri: true, owned: true
+  validates :devices,   uri: true, owned: true
 
-  before_save   :set_device_ids
+  before_save   :set_parent_id, :set_device_ids
+  after_save    :set_location_ids
   before_update :move_children_to_root
-  after_save    :find_parent, :find_children
-
-  def resource_owner_id=(resource_owner_id)
-    write_attribute(:resource_owner_id, resource_owner_id.to_s)
-  end
 
   def children_devices
-    children.map(&:devices).flatten
+    children.map(&:device_ids).flatten
   end
 
   def descendants_devices
-    descendants.map(&:devices).flatten
-  end
-
-  def safe_destroy
-    children.each { |child| child.move_to_root }
-    destroy
+    descendants.map(&:device_ids).flatten
   end
 
   private
 
-  def move_children_to_root
-    children.each { |child| child.move_to_root } if locations
+  def set_parent_id
+    self.parent_id = find_id(into) if into
   end
 
-  def find_parent
-    if parent
-      new_parent = find_location(parent)
-      self.move_to_child_of(new_parent) if new_parent
-    end
-  end
-
-  def find_children
-    if locations and !locations.empty?
-      children = find_locations(locations)
-      children.each { |child| child.move_to_child_of(self) }
-    end
-  end
-
-  def find_location(uri)
-    id = find_id(uri)
-    Location.where(id: id).where(resource_owner_id: resource_owner_id).first
-  end
-
-  def find_locations(uris)
-    ids = find_ids(uris)
-    Location.where(id: ids).where(resource_owner_id: resource_owner_id)
+  def set_location_ids
+    Location.in(id: find_ids(locations)).each { |l| l.update_attributes(parent_id: self.id) } if locations
   end
 
   def set_device_ids
-    self.devices = find_ids(devices)
+    self.device_ids = find_ids(devices).map{|id| Moped::BSON::ObjectId(id) } if devices
+  end
+
+  def move_children_to_root
+    children.each { |l| l.update_attributes(parent_id: nil) } if locations
   end
 end
-

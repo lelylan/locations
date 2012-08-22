@@ -29,10 +29,9 @@ Spork.prefork do
     config.mock_with :rspec
 
     # Clean up the database
-    config.before(:suite) { DatabaseCleaner[:active_record].strategy = :transaction }
-    config.before(:each)  { DatabaseCleaner[:active_record].clean }
-    config.before(:suite) { DatabaseCleaner[:mongoid].strategy = :truncation }
-    config.before(:each)  { DatabaseCleaner[:mongoid].clean }
+    config.before(:suite) { DatabaseCleaner.strategy = :truncation }
+    config.before(:suite) { DatabaseCleaner.orm = :mongoid }
+    config.before(:each)  { DatabaseCleaner.clean }
   end
 end
 

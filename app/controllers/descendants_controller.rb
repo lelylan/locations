@@ -16,7 +16,6 @@ class DescendantsController < ApplicationController
   def find_resource
     @location = @locations.find(params[:location_id])
     @descendants_locations = @location.descendants
-    @descendants_devices   = @location.descendants_devices
   end
 
 end
