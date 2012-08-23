@@ -7,10 +7,10 @@ describe Location do
   it { should validate_presence_of('name') }
   it { should validate_presence_of('type') }
 
-  it { Settings.validation.uris.valid.each     {|uri| should allow_value(uri).for(:into)} }
-  it { Settings.validation.uris.not_valid.each {|uri| should_not allow_value(uri).for(:into)} }
+  it { Settings.uris.valid.each     {|uri| should allow_value(uri).for(:into)} }
+  it { Settings.uris.not_valid.each {|uri| should_not allow_value(uri).for(:into)} }
 
-  it { Settings.locations.types.each {|type| should allow_value(type).for(:type)} }
+  it { %w(house floor room).each {|type| should allow_value(type).for(:type)} }
   it { [nil, '', 'not_valid'].each   {|type| should_not allow_value(type).for(:type)} }
 
   let!(:user) { FactoryGirl.create :user }

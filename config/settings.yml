@@ -1,6 +1,11 @@
 pagination:
   per: 25
   max_per: 100
+locations:
+  types:
+    - 'house'
+    - 'floor'
+    - 'room'
 services:
   devices: 'https://devices.lelylan.com'
   types: 'https://types.lelylan.com'
