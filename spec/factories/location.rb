@@ -31,18 +31,4 @@ FactoryGirl.define do
       room.update_attributes parent_id: floor.id
     end
   end
-
-  trait :with_devices do
-    after(:create) do |floor|
-      device_house = FactoryGirl.create :device, name: 'Light house', resource_owner_id: floor.resource_owner_id
-      floor.parent.update_attributes devices: [ a_uri(device_house) ]
-
-      device_floor = FactoryGirl.create :device, name: 'Light floor', resource_owner_id: floor.resource_owner_id
-      floor.update_attributes devices: [ a_uri(device_floor) ]
-
-      device_room = FactoryGirl.create :device, name: 'Light room', resource_owner_id: floor.resource_owner_id
-      pp floor.children
-      #floor.children.first.update_attributes devices: [ a_uri(device_room) ]
-    end
-  end
 end

@@ -253,7 +253,7 @@ DEPENDENCIES
   hashie
   launchy
   mongoid (~> 3.0.0.rc)
-  mongoid-ancestry
+  mongoid-ancestry (~> 0.3.0)
   rabl
   rails (~> 3.2.6)
   rails_best_practices
