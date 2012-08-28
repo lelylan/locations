@@ -19,7 +19,7 @@ module Locations
     # Custom directories with classes and modules you want to be autoloadable.
     config.autoload_paths += Dir[Rails.root.join('app', 'controllers', '{**}')]
     config.autoload_paths += Dir[Rails.root.join('app', 'models', '{**}')]
-    config.autoload_paths += %W(#{config.root}/lib/validators)
+    config.autoload_paths += Dir[Rails.root.join('lib', '{**}')]
 
     # Only load the plugins named here, in the order given (default is alphabetical).
     # :all can be used as a placeholder for all plugins not explicitly named.
@@ -58,5 +58,8 @@ module Locations
 
     # Version of your assets, change this if you want to expire all your assets
     config.assets.version = '1.0'
+
+    # Middlewares
+    config.middleware.use 'Hostable'
   end
 end

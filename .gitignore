@@ -29,3 +29,4 @@
 
 # Procfile env
 .env
+.production.env
