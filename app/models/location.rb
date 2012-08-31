@@ -9,6 +9,11 @@ class Location
   field :type
   field :device_ids, type: Array, default: []
 
+  index({ resource_owner_id: 1 })
+  index({ type: 1 })
+  index({ name: 1 })
+  index({ device_ids: 1 })
+
   attr_accessor  :into, :locations, :devices
   attr_protected :resource_owner_id, :location_ids, :device_ids
 
