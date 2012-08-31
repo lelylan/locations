@@ -40,7 +40,7 @@ feature 'DescendantsController' do
       json.last['devices'].should have(1).item
     end
 
-    it_behaves_like 'a changeable host'
+    it_behaves_like 'a proxiable service'
     it_behaves_like 'a not owned resource', 'page.driver.get(uri)'
     it_behaves_like 'a not found resource', 'page.driver.get(uri)'
   end

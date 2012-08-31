@@ -6,8 +6,12 @@ locations:
     - 'house'
     - 'floor'
     - 'room'
-services:
-  devices: 'https://devices.lelylan.com'
-  types: 'https://types.lelylan.com'
-  people: 'https://people.lelylan.com'
-  locations: 'https://locations.lelylan.com'
+scopes:
+  read:
+    - resources
+    - resources-read
+    - locations
+    - locations-read
+  write:
+    - resources
+    - locations

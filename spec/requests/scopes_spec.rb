@@ -5,7 +5,7 @@ feature 'Scope' do
   let!(:application) { FactoryGirl.create :application }
   let!(:user)        { FactoryGirl.create :user }
 
-  %w(locations.read resources.read).each do |scope|
+  %w(locations-read resources-read).each do |scope|
 
     context "with token #{scope}" do
 
