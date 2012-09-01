@@ -1,5 +1,5 @@
 class LocationDecorator < ApplicationDecorator
-  decorates :Location
+  decorates :location
 
   def uri
     h.location_path(model, default_options)
