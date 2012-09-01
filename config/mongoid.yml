@@ -48,6 +48,6 @@ production:
       uri: <%= ENV['MONGOLAB_LOCATIONS_URL'] %>
     people:
       uri: <%= ENV['MONGOLAB_PEOPLE_URL'] %>
-    types:
+    devices:
       uri: <%= ENV['MONGOLAB_DEVICES_URL'] %>
   options:
