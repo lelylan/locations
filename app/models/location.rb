@@ -9,10 +9,10 @@ class Location
   field :type
   field :device_ids, type: Array, default: []
 
-  index({ resource_owner_id: 1 })
-  index({ type: 1 })
-  index({ name: 1 })
-  index({ device_ids: 1 })
+  index({ resource_owner_id: 1 }, { background: true })
+  index({ type: 1 }, { background: true })
+  index({ name: 1 }, { background: true })
+  index({ device_ids: 1 }, { background: true })
 
   attr_accessor  :into, :locations, :devices
   attr_protected :resource_owner_id, :location_ids, :device_ids
