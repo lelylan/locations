@@ -21,8 +21,6 @@ class LocationDecorator < ApplicationDecorator
     end
   end
 
-  # TODO to improve making just one query (use something like identity map)
-  # on descendants views as we make a query for every locations
   def devices_view
     devices = Device.in(id: model.device_ids )
     devices.map { |device| format_device(device) }
@@ -31,7 +29,7 @@ class LocationDecorator < ApplicationDecorator
   private
 
   def format_location(location)
-    { 
+    {
       uri: LocationDecorator.decorate(location).uri,
       id: location.id.to_s,
       name: location.name
@@ -39,7 +37,7 @@ class LocationDecorator < ApplicationDecorator
   end
 
   def format_device(device)
-    { 
+    {
       uri: DeviceDecorator.decorate(device).uri,
       id: device.id.to_s,
       name: device.name

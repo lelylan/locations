@@ -17,7 +17,6 @@ feature 'Scope' do
 
       it { should authorize 'get /locations' }
       it { should authorize "get /locations/#{location.id}" }
-      it { should authorize "get /locations/#{location.id}/descendants" }
 
       it { should_not authorize 'post   /locations' }
       it { should_not authorize "put    /locations/#{location.id}" }
@@ -37,7 +36,6 @@ feature 'Scope' do
 
       it { should authorize 'get    /locations' }
       it { should authorize "get    /locations/#{location.id}" }
-      it { should authorize "get    /locations/#{location.id}/descendants" }
       it { should authorize 'post   /locations' }
       it { should authorize "put    /locations/#{location.id}" }
       it { should authorize "delete /locations/#{location.id}" }

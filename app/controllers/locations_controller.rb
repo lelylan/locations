@@ -11,16 +11,18 @@ class LocationsController < ApplicationController
 
   def index
     @locations = @locations.limit(params[:per])
+    render json: @locations
   end
 
   def show
+    render json: @location
   end
 
   def create
     @location = Location.new(params)
     @location.resource_owner_id = current_user.id
     if @location.save!
-      render 'show', status: 201, location: LocationDecorator.decorate(@location).uri
+      render json: @location, status: 201, location: LocationDecorator.decorate(@location).uri
     else
       render_422 'notifications.resource.not_valid', @location.errors
     end
@@ -28,14 +30,14 @@ class LocationsController < ApplicationController
 
   def update
     if @location.update_attributes!(params)
-      render 'show'
+      render json: @location
     else
       render_422 'notifications.resource.not_valid', @location.errors
     end
   end
 
   def destroy
-    render 'show'
+    render json: @location
     @location.destroy
   end
 

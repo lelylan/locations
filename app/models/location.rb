@@ -30,6 +30,8 @@ class Location
   after_save    :set_location_ids
   before_update :move_children_to_root
 
+  def active_model_serializer; LocationSerializer; end
+
   def children_devices
     children.map(&:device_ids).flatten
   end
