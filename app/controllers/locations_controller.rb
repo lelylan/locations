@@ -21,7 +21,7 @@ class LocationsController < ApplicationController
   def create
     @location = Location.new(params)
     @location.resource_owner_id = current_user.id
-    if @location.save!
+    if @location.save
       render json: @location, status: 201, location: LocationDecorator.decorate(@location).uri
     else
       render_422 'notifications.resource.not_valid', @location.errors
@@ -29,7 +29,7 @@ class LocationsController < ApplicationController
   end
 
   def update
-    if @location.update_attributes!(params)
+    if @location.update_attributes(params)
       render json: @location
     else
       render_422 'notifications.resource.not_valid', @location.errors
