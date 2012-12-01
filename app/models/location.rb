@@ -26,9 +26,10 @@ class Location
   validates :locations, uri: true, owned: true
   validates :devices,   uri: true, owned: true
 
+  before_update :move_children_to_root
   before_save   :set_parent_id, :set_device_ids
   after_save    :set_location_ids
-  before_update :move_children_to_root
+  after_save    :touch_ancestors, :touch_children
 
   def active_model_serializer; LocationSerializer; end
 
@@ -56,5 +57,13 @@ class Location
 
   def move_children_to_root
     children.each { |l| l.update_attributes(parent_id: nil) } if locations
+  end
+
+  def touch_ancestors
+    ancestors.update_all(updated_at: Time.now) if name_changed?
+  end
+
+  def touch_children
+    descendants.update_all(updated_at: Time.now) if name_changed?
   end
 end

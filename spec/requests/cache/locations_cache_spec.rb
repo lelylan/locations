@@ -110,91 +110,108 @@ feature 'Caching' do
     end
   end
 
-  #describe 'GET /locations' do
+  describe 'GET /locations' do
 
-    #let!(:resource) { FactoryGirl.create :location, resource_owner_id: user.id }
-    #let(:uri)       { "/locations" }
+    let!(:resource) { FactoryGirl.create :location, resource_owner_id: user.id }
+    let(:uri)       { "/locations" }
 
-    #let(:cache_json_key) { ActiveSupport::Cache.expand_cache_key(['location_short_serializer', resource.cache_key, 'to-json']) }
-    #let(:cache_hash_key) { ActiveSupport::Cache.expand_cache_key(['location_short_serializer', resource.cache_key, 'serializable-hash']) }
+    let(:cache_json_key) { ActiveSupport::Cache.expand_cache_key(['location_serializer', resource.cache_key, 'to-json']) }
+    let(:cache_hash_key) { ActiveSupport::Cache.expand_cache_key(['location_serializer', resource.cache_key, 'serializable-hash']) }
 
-    #before { page.driver.get uri }
+    before { page.driver.get uri }
 
-    #describe 'with fragment caching' do
+    describe 'with fragment caching' do
 
-      #it 'does not create the json fragment cache' do
-        #Rails.cache.exist?(cache_json_key).should_not be_true
-      #end
+      it 'does not create the json fragment cache' do
+        Rails.cache.exist?(cache_json_key).should_not be_true
+      end
 
-      #it 'creates the serialized hash fragment cache' do
-        #Rails.cache.exist?(cache_hash_key).should be_true
-      #end
-    #end
-  #end
+      it 'creates the serialized hash fragment cache' do
+        Rails.cache.exist?(cache_hash_key).should be_true
+      end
+    end
+  end
 
-  #describe 'with a cached location' do
+  describe 'when a location is already cached' do
 
-    #let!(:resource)  { FactoryGirl.create :location, resource_owner_id: user.id }
-    #before           { resource.update_attributes(updated_at: Time.now - 60) }
-    #let!(:uri)       { "/locations/#{resource.id}" }
-    #let!(:cache_key) { ActiveSupport::Cache.expand_cache_key(['location_serializer', resource.cache_key, 'to-json']) }
+    let!(:resource) { FactoryGirl.create :location, :with_parent, :with_children, resource_owner_id: user.id }
+    before          { resource.update_attributes(updated_at: Time.now - 60) }
+    let!(:uri)      { "/locations/#{resource.id}" }
+    let!(:old_key)  { ActiveSupport::Cache.expand_cache_key(['location_serializer', resource.cache_key, 'to-json']) }
 
-    #describe 'when updates a connected property' do
+    describe 'when a child is updated' do
 
-      #let!(:connection) { Property.find(resource.property_ids.first).save! }
-      #let!(:new_key)    { ActiveSupport::Cache.expand_cache_key(['location_serializer', resource.reload.cache_key, 'to-json']) }
+      describe 'with a new name' do
 
-      #describe 'GET /locations/:id' do
+        let!(:connection) { resource.descendants.first.update_attributes(name: 'updated') }
+        let!(:new_key)    { ActiveSupport::Cache.expand_cache_key(['location_serializer', resource.reload.cache_key, 'to-json']) }
 
-        #before { page.driver.get uri }
+        describe 'GET /locations/:id' do
 
-        #it 'refresh the fragment cache' do
-          #Rails.cache.exist?(new_key).should be_true
-        #end
+          before { page.driver.get uri }
 
-        #it 'creates a new cache key' do
-          #new_key.should_not == cache_key
-        #end
-      #end
-    #end
+          it 'refresh the fragment cache' do
+            Rails.cache.exist?(new_key).should be_true
+          end
 
-    #describe 'when updates a connected function' do
+          it 'creates a new cache key' do
+            new_key.should_not == old_key
+          end
+        end
+      end
 
-      #let!(:connection) { Function.find(resource.function_ids.first).save! }
-      #let!(:new_key)    { ActiveSupport::Cache.expand_cache_key(['location_serializer', resource.reload.cache_key, 'to-json']) }
+      describe 'with anything but not the name' do
 
-      #describe 'GET /locations/:id' do
+        let!(:connection) { resource.descendants.first.save }
+        let!(:new_key)    { ActiveSupport::Cache.expand_cache_key(['location_serializer', resource.reload.cache_key, 'to-json']) }
 
-        #before { page.driver.get uri }
+        describe 'GET /locations/:id' do
 
-        #it 'refresh the fragment cache' do
-          #Rails.cache.exist?(new_key).should be_true
-        #end
+          before { page.driver.get uri }
 
-        #it 'creates a new cache key' do
-          #new_key.should_not == cache_key
-        #end
-      #end
-    #end
+          it 'does not create a new cache key' do
+            new_key.should == old_key
+          end
+        end
+      end
+    end
 
-    #describe 'when updates a connected status' do
+    describe 'when a parent is updated' do
 
-      #let!(:connection) { Status.find(resource.status_ids.first).save! }
-      #let!(:new_key)    { ActiveSupport::Cache.expand_cache_key(['location_serializer', resource.reload.cache_key, 'to-json']) }
+      describe 'with a new name' do
 
-      #describe 'GET /locations/:id' do
+        let!(:connection) { resource.ancestors.first.update_attributes(name: 'updated') }
+        let!(:new_key)    { ActiveSupport::Cache.expand_cache_key(['location_serializer', resource.reload.cache_key, 'to-json']) }
 
-        #before { page.driver.get uri }
+        describe 'GET /locations/:id' do
 
-        #it 'refresh the fragment cache' do
-          #Rails.cache.exist?(new_key).should be_true
-        #end
+          before { page.driver.get uri }
 
-        #it 'creates a new cache key' do
-          #new_key.should_not == cache_key
-        #end
-      #end
-    #end
-  #end
+          it 'refresh the fragment cache' do
+            Rails.cache.exist?(new_key).should be_true
+          end
+
+          it 'creates a new cache key' do
+            new_key.should_not == old_key
+          end
+        end
+      end
+
+      describe 'with anything but not the name' do
+
+        let!(:connection) { resource.ancestors.first.save }
+        let!(:new_key)    { ActiveSupport::Cache.expand_cache_key(['location_serializer', resource.reload.cache_key, 'to-json']) }
+
+        describe 'GET /locations/:id' do
+
+          before { page.driver.get uri }
+
+          it 'does not create a new cache key' do
+            new_key.should == old_key
+          end
+        end
+      end
+    end
+  end
 end
 
