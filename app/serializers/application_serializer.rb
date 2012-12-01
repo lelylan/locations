@@ -44,19 +44,15 @@ class ApplicationSerializer < ActiveModel::Serializer
     ActiveSupport::Cache.expand_cache_key(args)
   end
 
-  # We are not interested in storing associations as we work hard on modeling.
-  # Anyway keeo this in consideration when using associations.
-  #
   # Cache individual Hash objects before serialization
   # This also makes them available to associated serializers
-  #
-  #def serializable_hash
-    #if perform_caching?
-      #Rails.cache.fetch expand_cache_key([self.class.to_s.underscore, object.cache_key, 'serializable-hash']) do
-        #super
-      #end
-    #else
-      #super
-    #end
-  #end
+  def serializable_hash
+    if perform_caching?
+      Rails.cache.fetch expand_cache_key([self.class.to_s.underscore, object.cache_key, 'serializable-hash']) do
+        super
+      end
+    else
+      super
+    end
+  end
 end

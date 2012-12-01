@@ -15,7 +15,7 @@ class LocationsController < ApplicationController
   end
 
   def show
-    render json: @location
+    render json: @location if stale?(@location)
   end
 
   def create
