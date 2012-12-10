@@ -19,6 +19,7 @@ module Locations
     # Custom directories with classes and modules you want to be autoloadable.
     config.autoload_paths += Dir[Rails.root.join('app', 'controllers', '{**}')]
     config.autoload_paths += Dir[Rails.root.join('app', 'models', '{**}')]
+    config.autoload_paths += Dir[Rails.root.join('app', 'serializers', '{**}')]
     config.autoload_paths += Dir[Rails.root.join('lib', '{**}')]
 
     # Only load the plugins named here, in the order given (default is alphabetical).
@@ -60,8 +61,9 @@ module Locations
     config.assets.version = '1.0'
 
     # Middlewares
-    config.middleware.use 'Hostable'
+    config.middleware.insert_after Rack::Lock, 'DailyRateLimit'
     config.middleware.use Rack::MethodOverride
+    config.middleware.use 'Hostable'
 
     # Set the default Logger in application.rb to STDOUT, otherwise logging with unicorn doesn't work
     config.logger = Logger.new(STDOUT) unless Rails.env.test?
