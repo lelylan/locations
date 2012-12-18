@@ -1,5 +1,4 @@
 class LocationsController < ApplicationController
-  eventable_for :location, resource: 'locations', only: %w(create update destroy)
 
   doorkeeper_for :index, :show, scopes: Settings.scopes.read.map(&:to_sym)
   doorkeeper_for :create, :update, :destroy, scopes: Settings.scopes.write.map(&:to_sym)
@@ -8,6 +7,8 @@ class LocationsController < ApplicationController
   before_filter :find_resource, only: %w(show update destroy)
   before_filter :search_params, only: %w(index)
   before_filter :pagination,    only: %w(index)
+  after_filter  :create_event,  only: %w(create update destroy)
+
 
   def index
     @locations = @locations.limit(params[:per])
@@ -61,5 +62,9 @@ class LocationsController < ApplicationController
     params[:per] = Settings.pagination.per if params[:per] == 0
     params[:per] = Settings.pagination.max_per if params[:per] > Settings.pagination.max_per
     @locations = @locations.gt(id: find_id(params[:start])) if params[:start]
+  end
+
+  def create_event
+    Event.create(resource_id: @location.id, resource: 'locations', event: params[:action], data: JSON.parse(response.body), resource_owner_id: current_user.id) if @location.valid?
   end
 end
