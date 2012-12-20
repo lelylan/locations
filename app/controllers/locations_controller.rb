@@ -11,7 +11,7 @@ class LocationsController < ApplicationController
 
 
   def index
-    @locations = @locations.limit(params[:per])
+    @locations = @locations.desc(:id).limit(params[:per])
     render json: @locations
   end
 
