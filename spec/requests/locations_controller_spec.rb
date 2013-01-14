@@ -29,6 +29,7 @@ feature 'LocationsController' do
 
     it_behaves_like 'a showable resource'
     it_behaves_like 'a proxiable service'
+    it_behaves_like 'a crossable resource'
     it_behaves_like 'a not owned resource', 'page.driver.get(uri)'
     it_behaves_like 'a not found resource', 'page.driver.get(uri)'
   end
