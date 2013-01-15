@@ -9,9 +9,9 @@ locations:
 scopes:
   read:
     - resources
-    - resources-read
+    - resources:read
     - locations
-    - locations-read
+    - locations:read
   write:
     - resources
     - locations
