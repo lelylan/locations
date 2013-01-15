@@ -6,7 +6,7 @@ class Location
 
   field :resource_owner_id, type: Moped::BSON::ObjectId
   field :name
-  field :type
+  field :type, default: 'generic'
   field :device_ids, type: Array, default: []
 
   index({ resource_owner_id: 1 }, { background: true })

@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe Location do
 
-  subject { FactoryGirl.create :location }
+  its(:type) { should == 'generic' }
 
   it { should validate_presence_of('name') }
   it { should validate_presence_of('type') }
@@ -10,7 +10,7 @@ describe Location do
   it { Settings.uris.valid.each     {|uri| should allow_value(uri).for(:into)} }
   it { Settings.uris.not_valid.each {|uri| should_not allow_value(uri).for(:into)} }
 
-  it { %w(house floor room).each {|type| should allow_value(type).for(:type)} }
+  it { %w(generic house floor room).each {|type| should allow_value(type).for(:type)} }
   it { [nil, '', 'not_valid'].each   {|type| should_not allow_value(type).for(:type)} }
 
   let!(:user) { FactoryGirl.create :user }

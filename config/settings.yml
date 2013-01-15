@@ -3,6 +3,7 @@ pagination:
   max_per: 100
 locations:
   types:
+    - 'generic'
     - 'house'
     - 'floor'
     - 'room'
