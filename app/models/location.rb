@@ -15,7 +15,7 @@ class Location
   index({ device_ids: 1 }, { background: true })
 
   attr_accessor  :into, :locations, :devices
-  attr_protected :resource_owner_id, :location_ids, :device_ids
+  attr_protected :resource_owner_id, :location_ids, :device_ids, :updated_at
 
   has_ancestry orphan_strategy: :rootify
 

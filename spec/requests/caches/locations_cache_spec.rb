@@ -135,7 +135,7 @@ feature 'Caching' do
   describe 'when a location is already cached' do
 
     let!(:resource) { FactoryGirl.create :location, :with_parent, :with_children, resource_owner_id: user.id }
-    before          { resource.update_attributes(updated_at: Time.now - 60) }
+    before          { resource.updated_at = Time.now - 60; resource.save }
     let!(:uri)      { "/locations/#{resource.id}" }
     let!(:old_key)  { ActiveSupport::Cache.expand_cache_key(['location_serializer', resource.cache_key, 'to-json']) }
 
