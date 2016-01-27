@@ -4,7 +4,7 @@ Locations API for Lelylan.
 
 #### Notes
 
-This API has been dismissed to make the Lelylan Core more solid and monimal. Adding a location API is something I find really useful, but need to be well structured. If interested on using it in your projects [let us know](mailto:touch@lelylan.com).
+This API has been dismissed to focus on a more solic and clean core of microservices. Adding a location API is something we find really useful, but need to be well structured to not mess up the whole architecture. If interested on using it in your projects [let us know](mailto:touch@lelylan.com).
 
 
 ## Requirements
